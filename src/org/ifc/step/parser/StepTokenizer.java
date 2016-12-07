@@ -20,20 +20,20 @@ import org.ifc.step.parser.util.*;
  * or contact us directly: <a href='mailto:info@ifctoolsproject.com'>info@ifctoolsproject.com</a><br>
  */
 public class StepTokenizer {
-    public final static int EOF = 0;
-    public final static int LPAREN = 9;
-    public final static int RPAREN = 10;
-    public final static int SEMICOLON = 15;
-    public final static int COMMA = 17;
-    public final static int DOLLAR = 20;
-    public final static int STAR = 21;
-    public final static int STANDARD_KEYWORD = 25;
-    public final static int INTEGER = 27;
-    public final static int REAL = 28;
-    public final static int STRING = 30;
-    public final static int ENTITY_INSTANCE_NAME = 31;
-    public final static int ENUMERATION = 32;
-    public final static int BINARY = 34;
+    public final static int EOF         = 0;
+    public final static int LPAREN      = 1;
+    public final static int RPAREN      = 2;
+    public final static int SEMICOLON   = 3;
+    public final static int COMMA       = 4;
+    public final static int DOLLAR      = 5;
+    public final static int STAR        = 6;
+    public final static int INTEGER     = 7;
+    public final static int REAL        = 8;
+    public final static int STRING      = 9;
+    public final static int ENUMERATION = 10;
+    public final static int BINARY      = 11;
+    public final static int STANDARD_KEYWORD     = 12;
+    public final static int ENTITY_INSTANCE_NAME = 13;
 
     private static long stepCounter = 0;
 
@@ -122,20 +122,9 @@ public class StepTokenizer {
         }
     }
 
-//    private static void initLinesToRead(File file) throws IOException {
-//        linesToRead = 0;
-//        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-//        while (bufferedReader.readLine() != null) {
-//            linesToRead++;
-//        }
-//        progressStep = linesToRead / 100;
-//    }
-
     public static ArrayEx<InternalAccessClass> startParsing(BufferedReader br) throws Exception {
         //init
-//        progress = 0;
-//        linesToRead = urlFileCache.getLineNumberCount();
-//        progressStep = linesToRead / 100;
+        progress = 0;
 
         //parse
         nodeMap = new ArrayEx<InternalAccessClass>(1024);
@@ -143,14 +132,7 @@ public class StepTokenizer {
         return nodeMap;
     }
 
-//    public static HashMap<Integer, InternalAccessClass> startParsing(File file) throws Exception {
-//        progress = 0;
-//        initLinesToRead(file);
-//        nodeMap = new HashMap<Integer, InternalAccessClass>((int) linesToRead + 1);
-//        parse(new BufferedReaderEx(new FileReader(file)));
-//        return nodeMap;
-//    }
-
+    @SuppressWarnings("unchecked")
     private static void parseHeader(Token t) throws Exception {
         StepTokenizer.getNextToken(); // ";"
         node.reset();
@@ -390,12 +372,9 @@ public class StepTokenizer {
     private static char[] __static_string_buf = new char[8192];
 
     private static Token readString() {
-//        StringBuilder sb = new StringBuilder(32);
-//        sb.append("'");
         int idx = -1;
-//        __static_string_buf[0] = '\'';
-
         int nextChar, curChar;
+
         while (true) {
             curChar = __input_stream.read();
             if (curChar == '\'') {
@@ -455,11 +434,21 @@ public class StepTokenizer {
     }
 
     private static Token readEnum() {
-
 //        int idx = 0;
         int nextChar = __input_stream.next();
 
-        if (nextChar >= '0' && nextChar <= '9') {
+//        if (nextChar >= '0' && nextChar <= '9') {
+        switch (nextChar) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
             // Real number
             UnsafeDoubleParser.init('.');
 
@@ -471,9 +460,9 @@ public class StepTokenizer {
 
             // return new Token(REAL, new String(__static_keyword_buf, 0, idx + 1));
             return new Token(REAL, UnsafeDoubleParser.evalDouble());
-        } else {
+//        } else {
+            default:
             // Enum
-//            __static_keyword_buf[0] = '.';
             int idx = -1;
             while (nextChar != '.') {
                 __static_keyword_buf[++idx] = (char) nextChar;
@@ -486,12 +475,24 @@ public class StepTokenizer {
     }
 
     private static Token readName() {
-        int nextChar = __input_stream.next();
+//        int nextChar = __input_stream.next();
+        int nextChar;
         int num = 0;
 
-        while (nextChar != ',' && nextChar != ')' && nextChar != '=') {
-            num = num * 10 + (nextChar - (int) '0');
-            nextChar = __input_stream.next();
+//        while (nextChar != ',' && nextChar != ')' && nextChar != '=') {
+//            num = num * 10 + (nextChar - (int) '0');
+//            nextChar = __input_stream.next();
+//        }
+        read:
+        while (true) {
+            switch (nextChar = __input_stream.next()) {
+                case ',':
+                case ')':
+                case '=':
+                    break read;
+                default:
+                    num = num * 10 + (nextChar - (int) '0');
+            }
         }
 
         return new Token(ENTITY_INSTANCE_NAME, num);
@@ -515,20 +516,23 @@ public class StepTokenizer {
      */
     private static Token getNextToken() {
         int nextChar;
-        do {
-            nextChar = __input_stream.read();
-        } while (nextChar == ' ' || nextChar == '\r' || nextChar == '\n' || nextChar == '\t');
+//        do {
+//            nextChar = __input_stream.read();
+//        } while (nextChar == ' ' || nextChar == '\r' || nextChar == '\n' || nextChar == '\t');
+        parse:
+        while (true) {
+            switch (nextChar = __input_stream.read()) {
+                case ' ':
+                case '\r':
+                case '\n':
+                case '\t':
+                    break;
+                default:
+                    break parse;
+            }
+        }
 
         switch (nextChar) {
-            case -1:
-                return new Token(EOF);
-            case '/':
-                skipComment();
-                return getNextToken();
-            case '=':
-                return Token.NullToken;
-            case ';':
-                return Token.SemiColonToken;
             case ',':
                 return Token.CommaToken;
             case '(':
@@ -560,66 +564,23 @@ public class StepTokenizer {
             case '9':
             case '-':
                 return readNumber((char) nextChar);
+            case -1:
+                return new Token(EOF);
+            case '/':
+                skipComment();
+                return getNextToken();
+            case '=':
+                return Token.NullToken;
+            case ';':
+                return Token.SemiColonToken;
             default:
                 if (nextChar >= 'A' && nextChar <= 'Z') {
                     return readKeyword((char) nextChar);
                 } else {
-                    System.out.println("unknown: " + __input_stream.getCurLine() +
-                            " : " + String.valueOf((char) nextChar));
+                    System.out.println("Unknown char at line " + __input_stream.getCurLine() +
+                            ": [" + String.valueOf((char) nextChar) + "]");
                     return Token.NullToken;
                 }
-        }
-    }
-
-    private static List<Token> getTokensUntilEOI() {
-        List<Token> ret = new ArrayList<Token>(16);
-        int nextChar;
-
-        while (true) {
-            do {
-                nextChar = __input_stream.read();
-            } while (nextChar == ' ' || nextChar == '\r' || nextChar == '\n' || nextChar == '\t');
-
-            switch (nextChar) {
-                case '=':
-                case ';':
-                case -1:
-                    return ret;
-                case ',':
-                    break;
-                case '(':
-                    System.out.println("Theoretically error");
-                    System.exit(0);
-                case ')':
-                    break;
-                case '*':
-                    ret.add(Token.StarToken);
-                    break;
-                case '$':
-                    ret.add(Token.DollarToken);
-                    break;
-                case '\'':
-                    ret.add(readString());
-                    break;
-                case '.':
-                    ret.add(readEnum());
-                    break;
-                case '#':
-                    ret.add(readName());
-                    break;
-                case '"':
-                    System.out.println("BINARY is not implemented because IFC seems not to need them");
-                    System.exit(0);
-                default:
-                    if (nextChar >= 'A' && nextChar <= 'Z') {
-                        ret.add(readKeyword((char) nextChar));
-                    } else if ((nextChar >= '0' && nextChar <= '9') || nextChar == '-') {
-                        ret.add(readNumber((char) nextChar));
-                    } else {
-                        System.out.println("unknown: " + __input_stream.getCurLine() +
-                                " : " + String.valueOf((char) nextChar));
-                    }
-            }
         }
     }
 }

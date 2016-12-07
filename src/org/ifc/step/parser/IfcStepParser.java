@@ -183,8 +183,6 @@ public class IfcStepParser {
                             "initialize objects..."));
                     counter = 0;
                 }
-            } else {
-//                System.out.println(idx);
             }
         }
 //        int workerCount = 4;
@@ -390,7 +388,6 @@ public class IfcStepParser {
                             parameters.set(i, new LIST<CloneableObject>(dummyObject.getParameter()));
                         }
                     } else {
-//                        System.out.println(PACKAGE_NAME + className);
                         Class<?> parameterClass = Class.forName(PACKAGE_NAME + className);
                         String superClassName = parameterClass.getGenericSuperclass().toString();
                         superClassName = superClassName.replace(PACKAGE_NAME, "");

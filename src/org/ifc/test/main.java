@@ -4,6 +4,7 @@ import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 
 import java.io.FileInputStream;
+import java.util.HashMap;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -45,26 +46,25 @@ public class main {
 
     public static void main(String[] args) throws Exception {
         IfcModel model = new IfcModel();
-//        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
         long start = System.currentTimeMillis();
-//        for (int i = 0; i < 1000000; i++) {
-//            test(Double.toString(Math.random() * i));
+//        int b = 0;
+//        for (int i = 0; i < 1000000000; i++) {
+//            // test(Double.toString(Math.random() * i));
+//            String a = "abcdef";
+//            b = a.hashCode();
 //        }
 //        System.out.println(System.currentTimeMillis() - start);
-//
-//        if (1 == 1) {
-//            return;
-//        }
 
+        if (1 == 1) {
+            return;
+        }
 
-//        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
-
-
-        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
         System.out.println(model.getIfcObjects().size());
         System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
-        System.out.println(model.getIfcObjectByEntityInstanceName(91).getStepLine());
+//        System.out.println(model.getIfcObjectByEntityInstanceName(91).getStepLine());
+//        System.out.println(model.getIfcObjectByEntityInstanceName(11885).getStepLine());
     }
 }

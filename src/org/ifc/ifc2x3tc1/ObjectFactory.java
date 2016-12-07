@@ -27,6 +27,12 @@ public class ObjectFactory extends java.util.HashMap<String, ObjectFactory.Class
 		return cb.instance();
 	}
 
+//	@Override
+//	public ObjectFactory.ClassBuilder put(String key, ObjectFactory.ClassBuilder value) {
+//		System.out.println(key.hashCode());
+//		return super.put(key, value);
+//	}
+
 	public ObjectFactory()
 	{
 		this.put("IFCSEQUENCEENUM", new IfcSequenceEnumBuilder());
