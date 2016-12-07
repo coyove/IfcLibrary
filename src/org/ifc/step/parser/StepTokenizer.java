@@ -283,7 +283,7 @@ public class StepTokenizer {
         }
     }
 
-    public static void parse(BufferedReaderEx br) throws Exception {
+    private static void parse(BufferedReaderEx br) throws Exception {
         __input_stream = br;
 
         for (Token t = StepTokenizer.getNextToken();
@@ -446,9 +446,9 @@ public class StepTokenizer {
         }
 
         if (UnsafeDoubleParser.isInteger()) {
-            return new Token(INTEGER, UnsafeDoubleParser.sealToInteger());
+            return new Token(INTEGER, UnsafeDoubleParser.evalInteger());
         } else {
-            return new Token(REAL, UnsafeDoubleParser.sealToDouble());
+            return new Token(REAL, UnsafeDoubleParser.evalDouble());
         }
 //        String image = new String(__static_keyword_buf, 0, idx + 1);
 //        return new Token(realFlag ? REAL : INTEGER, image);
@@ -470,7 +470,7 @@ public class StepTokenizer {
             }
 
             // return new Token(REAL, new String(__static_keyword_buf, 0, idx + 1));
-            return new Token(REAL, UnsafeDoubleParser.sealToDouble());
+            return new Token(REAL, UnsafeDoubleParser.evalDouble());
         } else {
             // Enum
 //            __static_keyword_buf[0] = '.';
@@ -513,7 +513,7 @@ public class StepTokenizer {
     /**
      * Get the next Token.
      */
-    public static Token getNextToken() {
+    private static Token getNextToken() {
         int nextChar;
         do {
             nextChar = __input_stream.read();
@@ -548,16 +548,78 @@ public class StepTokenizer {
             case '"':
                 System.out.println("BINARY is not implemented because IFC seems not to need them");
                 System.exit(0);
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '-':
+                return readNumber((char) nextChar);
             default:
                 if (nextChar >= 'A' && nextChar <= 'Z') {
                     return readKeyword((char) nextChar);
-                } else if ((nextChar >= '0' && nextChar <= '9') || nextChar == '-') {
-                    return readNumber((char) nextChar);
                 } else {
                     System.out.println("unknown: " + __input_stream.getCurLine() +
                             " : " + String.valueOf((char) nextChar));
                     return Token.NullToken;
                 }
+        }
+    }
+
+    private static List<Token> getTokensUntilEOI() {
+        List<Token> ret = new ArrayList<Token>(16);
+        int nextChar;
+
+        while (true) {
+            do {
+                nextChar = __input_stream.read();
+            } while (nextChar == ' ' || nextChar == '\r' || nextChar == '\n' || nextChar == '\t');
+
+            switch (nextChar) {
+                case '=':
+                case ';':
+                case -1:
+                    return ret;
+                case ',':
+                    break;
+                case '(':
+                    System.out.println("Theoretically error");
+                    System.exit(0);
+                case ')':
+                    break;
+                case '*':
+                    ret.add(Token.StarToken);
+                    break;
+                case '$':
+                    ret.add(Token.DollarToken);
+                    break;
+                case '\'':
+                    ret.add(readString());
+                    break;
+                case '.':
+                    ret.add(readEnum());
+                    break;
+                case '#':
+                    ret.add(readName());
+                    break;
+                case '"':
+                    System.out.println("BINARY is not implemented because IFC seems not to need them");
+                    System.exit(0);
+                default:
+                    if (nextChar >= 'A' && nextChar <= 'Z') {
+                        ret.add(readKeyword((char) nextChar));
+                    } else if ((nextChar >= '0' && nextChar <= '9') || nextChar == '-') {
+                        ret.add(readNumber((char) nextChar));
+                    } else {
+                        System.out.println("unknown: " + __input_stream.getCurLine() +
+                                " : " + String.valueOf((char) nextChar));
+                    }
+            }
         }
     }
 }

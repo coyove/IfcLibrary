@@ -534,16 +534,16 @@ public class UnsafeDoubleParser {
         }
     }
 
-    public static double sealToDouble() {
-        _seal();
+    public static double evalDouble() {
+        seal();
         return doubleValue(__isNegative, decExp, __digits, __nDigits);
     }
 
-    public static int sealToInteger() {
+    public static int evalInteger() {
         return potentialInteger;
     }
 
-    private static void _seal() {
+    private static void seal() {
         /*
          * At this point, we've scanned all the digits and decimal
          * point we're going to see. Trim off leading and trailing

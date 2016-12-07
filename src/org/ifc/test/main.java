@@ -20,7 +20,7 @@ public class main {
             }
         }
 
-        return UnsafeDoubleParser.sealToDouble();
+        return UnsafeDoubleParser.evalDouble();
     }
 
     public static void test(String s) throws Exception {
@@ -35,7 +35,7 @@ public class main {
             }
         }
 
-        double d2= UnsafeDoubleParser.sealToDouble();
+        double d2= UnsafeDoubleParser.evalDouble();
         if (d1 != d2) {
             System.out.println(d1);
             System.out.println(d2);
