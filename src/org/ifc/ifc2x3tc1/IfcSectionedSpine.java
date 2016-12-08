@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSectionedSpine extends IfcGeometricRepresentationItem implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCompositeCurve","LIST<IfcProfileDef>","LIST<IfcAxis2Placement3D>"};
+private static final int[] nonInverseHashAttributes = new int[]{47008,-2147439140,-2147436861};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

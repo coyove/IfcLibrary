@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcBoundingBox extends IfcGeometricRepresentationItem implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCartesianPoint","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{51826,35714,35714,35714};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

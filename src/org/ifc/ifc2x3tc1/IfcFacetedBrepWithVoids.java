@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcFacetedBrepWithVoids extends IfcManifoldSolidBrep implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcClosedShell","SET<IfcClosedShell>"};
+private static final int[] nonInverseHashAttributes = new int[]{6688,1073748512};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

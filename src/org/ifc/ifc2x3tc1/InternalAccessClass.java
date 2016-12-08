@@ -14,6 +14,7 @@ public abstract class InternalAccessClass implements ClassInterface
 {
 	abstract void initialize(ArrayList<CloneableObject> parameters);
 	abstract String[] getNonInverseAttributeTypes();
+	abstract int[] getNonInverseHashAttributeTypes();
 	abstract void setStepLineNumber(int number);
 	abstract void setStepParameter(ArrayList<CloneableObject> parameter);
 	abstract ArrayList<CloneableObject> getStepParameter();

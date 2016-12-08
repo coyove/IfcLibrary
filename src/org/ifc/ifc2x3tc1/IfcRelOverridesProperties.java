@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcRelOverridesProperties extends IfcRelDefinesByProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","SET<IfcObject>","IfcPropertySetDefinition","SET<IfcProperty>"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,1073789907,268435456,1073783074};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

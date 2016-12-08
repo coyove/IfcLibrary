@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcStructuralSteelProfileProperties extends IfcStructuralProfileProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcProfileDef","IfcMassPerLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcAreaMeasure","IfcMomentOfInertiaMeasure","IfcMomentOfInertiaMeasure","IfcMomentOfInertiaMeasure","IfcMomentOfInertiaMeasure","IfcWarpingConstantMeasure","IfcLengthMeasure","IfcLengthMeasure","IfcAreaMeasure","IfcAreaMeasure","IfcSectionModulusMeasure","IfcSectionModulusMeasure","IfcSectionModulusMeasure","IfcSectionModulusMeasure","IfcSectionModulusMeasure","IfcLengthMeasure","IfcLengthMeasure","IfcAreaMeasure","IfcAreaMeasure","IfcPositiveRatioMeasure","IfcPositiveRatioMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,268435456,16117,35714,35714,35714,29018,45729,45729,45729,45729,45208,30921,30921,29018,29018,12217,12217,12217,12217,12217,30921,30921,29018,29018,12756,12756};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

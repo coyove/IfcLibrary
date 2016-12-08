@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class File_Name extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"STRING","TimeStampText","LIST<STRING>","LIST<STRING>","STRING","STRING","STRING"};
+private static final int[] nonInverseHashAttributes = new int[]{30073,12789,-2147453575,-2147453575,30073,30073,30073};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

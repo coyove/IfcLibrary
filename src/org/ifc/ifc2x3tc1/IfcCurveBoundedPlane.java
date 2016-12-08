@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCurveBoundedPlane extends IfcBoundedSurface implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcPlane","IfcCurve","SET<IfcCurve>"};
+private static final int[] nonInverseHashAttributes = new int[]{3681,268435456,1073745811};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

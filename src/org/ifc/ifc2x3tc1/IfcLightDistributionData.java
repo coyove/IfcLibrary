@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcLightDistributionData extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcPlaneAngleMeasure","LIST<IfcPlaneAngleMeasure>","LIST<IfcLuminousIntensityDistributionMeasure>"};
+private static final int[] nonInverseHashAttributes = new int[]{8719,-2147474929,-2147446714};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

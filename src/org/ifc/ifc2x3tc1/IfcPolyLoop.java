@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcPolyLoop extends IfcLoop implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"LIST<IfcCartesianPoint>"};
+private static final int[] nonInverseHashAttributes = new int[]{-2147431822};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcThermalMaterialProperties extends IfcMaterialProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcMaterial","IfcSpecificHeatCapacityMeasure","IfcThermodynamicTemperatureMeasure","IfcThermodynamicTemperatureMeasure","IfcThermalConductivityMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{52047,35159,193,193,39058};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcStructuralLoadSingleDisplacementDistortion extends IfcStructuralLoadSingleDisplacement implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcLengthMeasure","IfcLengthMeasure","IfcLengthMeasure","IfcPlaneAngleMeasure","IfcPlaneAngleMeasure","IfcPlaneAngleMeasure","IfcCurvatureMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,30921,30921,30921,8719,8719,8719,37157};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

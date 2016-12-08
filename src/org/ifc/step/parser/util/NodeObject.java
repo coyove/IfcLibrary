@@ -15,9 +15,10 @@ import org.ifc.ifc2x3tc1.CloneableObject;
  * or contact us directly: <a href='mailto:info@ifctoolsproject.com'>info@ifctoolsproject.com</a><br>
  */
 public class NodeObject implements CloneableObject {
-    Integer lineNumber = null;
-    String className = null;
-    ArrayList<CloneableObject> parameters = null;
+    private Integer lineNumber = null;
+    private String className = null;
+    private int classHash = 0;
+    private ArrayList<CloneableObject> parameters = null;
 
     public NodeObject() {
         parameters = new ArrayList<CloneableObject>(20);
@@ -33,6 +34,7 @@ public class NodeObject implements CloneableObject {
     public void reset() {
         lineNumber = null;
         className = null;
+        classHash = 0;
         parameters = new ArrayList<CloneableObject>(20);
 
     }
@@ -63,6 +65,14 @@ public class NodeObject implements CloneableObject {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public int getClassHash() {
+        return classHash;
+    }
+
+    public void setClassHash(int hash) {
+        this.classHash = hash;
     }
 
     public ArrayList<CloneableObject> getParameter() {

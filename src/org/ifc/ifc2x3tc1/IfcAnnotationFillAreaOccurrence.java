@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcAnnotationFillAreaOccurrence extends IfcAnnotationOccurrence implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcRepresentationItem","SET<IfcPresentationStyleAssignment>","IfcLabel","IfcPoint","IfcGlobalOrLocalEnum"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,1073758784,3773,268435456,21554};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

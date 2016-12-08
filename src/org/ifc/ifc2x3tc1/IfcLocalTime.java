@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcLocalTime extends InternalAccessClass implements IfcObjectReferenceSelect, IfcDateTimeSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcHourInDay","IfcMinuteInHour","IfcSecondInMinute","IfcCoordinatedUniversalTimeOffset","IfcDaylightSavingHour"};
+private static final int[] nonInverseHashAttributes = new int[]{5844,45667,48224,61931,54174};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcConstraintAggregationRelationship extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcText","IfcConstraint","LIST<IfcConstraint>","IfcLogicalOperatorEnum"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,47402,268435456,-2147439374,34741};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

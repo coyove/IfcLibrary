@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcApprovalRelationship extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcApproval","IfcApproval","IfcText","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{41170,41170,47402,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

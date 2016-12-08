@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcShapeAspect extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"LIST<IfcShapeModel>","IfcLabel","IfcText","LOGICAL","IfcProductDefinitionShape"};
+private static final int[] nonInverseHashAttributes = new int[]{-2147439431,3773,47402,47284,14673};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSurfaceStyleRendering extends IfcSurfaceStyleShading implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcColourRgb","IfcNormalisedRatioMeasure","IfcColourOrFactor","IfcColourOrFactor","IfcColourOrFactor","IfcColourOrFactor","IfcColourOrFactor","IfcSpecularHighlightSelect","IfcReflectanceMethodEnum"};
+private static final int[] nonInverseHashAttributes = new int[]{5752,34149,268435456,268435456,268435456,268435456,268435456,268435456,29164};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

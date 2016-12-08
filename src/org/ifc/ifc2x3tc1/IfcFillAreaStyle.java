@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcFillAreaStyle extends IfcPresentationStyle implements IfcPresentationStyleSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","SET<IfcFillStyleSelect>"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,1073773053};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

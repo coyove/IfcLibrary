@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSpaceThermalLoadProperties extends IfcPropertySetDefinition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcPositiveRatioMeasure","IfcThermalLoadSourceEnum","IfcPropertySourceEnum","IfcText","IfcPowerMeasure","IfcPowerMeasure","IfcTimeSeries","IfcLabel","IfcLabel","IfcThermalLoadTypeEnum"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,12756,5456,33845,47402,43107,43107,268435456,3773,3773,10833};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

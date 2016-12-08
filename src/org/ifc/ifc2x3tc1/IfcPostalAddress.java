@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcPostalAddress extends IfcAddress implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcAddressTypeEnum","IfcText","IfcLabel","IfcLabel","LIST<IfcLabel>","IfcLabel","IfcLabel","IfcLabel","IfcLabel","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{32677,47402,3773,3773,-2147479875,3773,3773,3773,3773,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

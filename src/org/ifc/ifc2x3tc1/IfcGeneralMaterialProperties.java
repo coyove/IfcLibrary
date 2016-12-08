@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcGeneralMaterialProperties extends IfcMaterialProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcMaterial","IfcMolecularWeightMeasure","IfcNormalisedRatioMeasure","IfcMassDensityMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{52047,43595,34149,56917};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

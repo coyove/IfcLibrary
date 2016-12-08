@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public abstract class IfcPlacement extends IfcGeometricRepresentationItem implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCartesianPoint"};
+private static final int[] nonInverseHashAttributes = new int[]{51826};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

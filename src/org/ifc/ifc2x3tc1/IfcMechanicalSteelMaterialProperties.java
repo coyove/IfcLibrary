@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcMechanicalSteelMaterialProperties extends IfcMechanicalMaterialProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcMaterial","IfcDynamicViscosityMeasure","IfcModulusOfElasticityMeasure","IfcModulusOfElasticityMeasure","IfcPositiveRatioMeasure","IfcThermalExpansionCoefficientMeasure","IfcPressureMeasure","IfcPressureMeasure","IfcPositiveRatioMeasure","IfcModulusOfElasticityMeasure","IfcPressureMeasure","IfcPositiveRatioMeasure","SET<IfcRelaxation>"};
+private static final int[] nonInverseHashAttributes = new int[]{52047,38893,33953,33953,12756,37491,116,116,12756,33953,116,12756,1073786409};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSurfaceStyleRefraction extends InternalAccessClass implements ClassInterface, IfcSurfaceStyleElementSelect
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcReal","IfcReal"};
+private static final int[] nonInverseHashAttributes = new int[]{47572,47572};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

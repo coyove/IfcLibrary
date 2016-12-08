@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcGeometricRepresentationSubContext extends IfcGeometricRepresentationContext implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcLabel","IfcDimensionCount","DOUBLE","IfcAxis2Placement","IfcDirection","IfcGeometricRepresentationContext","IfcPositiveRatioMeasure","IfcGeometricProjectionEnum","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,3773,51769,2619,268435456,5701,60127,12756,27013,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

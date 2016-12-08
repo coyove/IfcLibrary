@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcMaterialLayer extends InternalAccessClass implements IfcObjectReferenceSelect, ClassInterface, IfcMaterialSelect
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcMaterial","IfcPositiveLengthMeasure","IfcLogical"};
+private static final int[] nonInverseHashAttributes = new int[]{52047,35714,28838};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

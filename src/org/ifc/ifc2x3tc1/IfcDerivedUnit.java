@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcDerivedUnit extends InternalAccessClass implements IfcUnit, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"SET<IfcDerivedUnitElement>","IfcDerivedUnitEnum","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{1073785184,7805,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

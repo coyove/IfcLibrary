@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcElectricalBaseProperties extends IfcEnergyProperties implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcEnergySequenceEnum","IfcLabel","IfcElectricCurrentEnum","IfcElectricVoltageMeasure","IfcFrequencyMeasure","IfcElectricCurrentMeasure","IfcElectricCurrentMeasure","IfcPowerMeasure","IfcPowerMeasure","INTEGER"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,40350,3773,24688,56211,54126,56238,56238,43107,43107,47884};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

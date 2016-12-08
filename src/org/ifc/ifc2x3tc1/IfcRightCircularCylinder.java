@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcRightCircularCylinder extends IfcCsgPrimitive3D implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcAxis2Placement3D","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{46787,35714,35714};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

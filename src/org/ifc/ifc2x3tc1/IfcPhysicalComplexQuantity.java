@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcPhysicalComplexQuantity extends IfcPhysicalQuantity implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcText","SET<IfcPhysicalQuantity>","IfcLabel","IfcLabel","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,47402,1073759032,3773,3773,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

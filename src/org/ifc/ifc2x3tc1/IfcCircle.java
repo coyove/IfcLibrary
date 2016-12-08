@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCircle extends IfcConic implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcAxis2Placement","IfcPositiveLengthMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,35714};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcStyledRepresentation extends IfcStyleModel implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcRepresentationContext","IfcLabel","IfcLabel","SET<IfcRepresentationItem>"};
+private static final int[] nonInverseHashAttributes = new int[]{38895,3773,3773,1073751279};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcIrregularTimeSeries extends IfcTimeSeries implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcText","IfcDateTimeSelect","IfcDateTimeSelect","IfcTimeSeriesDataTypeEnum","IfcDataOriginEnum","IfcLabel","IfcUnit","LIST<IfcIrregularTimeSeriesValue>"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,47402,268435456,268435456,9673,53805,3773,268435456,-2147449520};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

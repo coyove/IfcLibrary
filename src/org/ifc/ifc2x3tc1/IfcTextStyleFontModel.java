@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTextStyleFontModel extends IfcPreDefinedTextFont implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","LIST<IfcTextFontName>","IfcFontStyle","IfcFontVariant","IfcFontWeight","IfcSizeSelect"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,-2147440530,5649,29123,49755,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

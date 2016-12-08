@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTrimmedCurve extends IfcBoundedCurve implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCurve","SET<IfcTrimmingSelect>","SET<IfcTrimmingSelect>","BOOLEAN","IfcTrimmingPreference"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,1073780193,1073780193,47261,45567};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

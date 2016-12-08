@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCompositeCurveSegment extends IfcGeometricRepresentationItem implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcTransitionCode","BOOLEAN","IfcCurve"};
+private static final int[] nonInverseHashAttributes = new int[]{38109,47261,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

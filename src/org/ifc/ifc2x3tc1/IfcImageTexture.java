@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcImageTexture extends IfcSurfaceTexture implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"BOOLEAN","BOOLEAN","IfcSurfaceTextureEnum","IfcCartesianTransformationOperator2D","IfcIdentifier"};
+private static final int[] nonInverseHashAttributes = new int[]{47261,47261,40239,24308,44139};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcBoundaryNodeConditionWarping extends IfcBoundaryNodeCondition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcLinearStiffnessMeasure","IfcLinearStiffnessMeasure","IfcLinearStiffnessMeasure","IfcRotationalStiffnessMeasure","IfcRotationalStiffnessMeasure","IfcRotationalStiffnessMeasure","IfcWarpingMomentMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,40131,40131,40131,58278,58278,58278,47175};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

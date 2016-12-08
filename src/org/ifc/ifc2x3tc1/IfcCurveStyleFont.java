@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCurveStyleFont extends InternalAccessClass implements IfcCurveStyleFontSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","LIST<IfcCurveStyleFontPattern>"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,-2147471348};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

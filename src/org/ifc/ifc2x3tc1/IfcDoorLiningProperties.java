@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcDoorLiningProperties extends IfcPropertySetDefinition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcLengthMeasure","IfcLengthMeasure","IfcLengthMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcShapeAspect"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,35714,35714,35714,35714,35714,30921,30921,30921,35714,35714,6813};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

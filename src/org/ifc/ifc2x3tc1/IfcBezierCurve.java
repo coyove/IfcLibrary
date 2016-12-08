@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcBezierCurve extends IfcBSplineCurve implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"INTEGER","LIST<IfcCartesianPoint>","IfcBSplineCurveForm","LOGICAL","LOGICAL"};
+private static final int[] nonInverseHashAttributes = new int[]{47884,-2147431822,37285,47284,47284};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

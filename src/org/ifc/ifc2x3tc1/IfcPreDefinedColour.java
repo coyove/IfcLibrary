@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public abstract class IfcPreDefinedColour extends IfcPreDefinedItem implements IfcColour, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

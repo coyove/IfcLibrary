@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTextStyleTextModel extends InternalAccessClass implements IfcTextStyleSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcSizeSelect","IfcTextAlignment","IfcTextDecoration","IfcSizeSelect","IfcSizeSelect","IfcTextTransformation","IfcSizeSelect"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,8111,43188,268435456,268435456,45788,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

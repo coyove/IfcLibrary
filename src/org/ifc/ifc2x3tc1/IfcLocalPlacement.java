@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcLocalPlacement extends IfcObjectPlacement implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcObjectPlacement","IfcAxis2Placement"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

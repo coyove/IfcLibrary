@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTextureMap extends IfcTextureCoordinate implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"SET<IfcVertexBasedTextureMap>"};
+private static final int[] nonInverseHashAttributes = new int[]{1073747365};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

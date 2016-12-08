@@ -114,6 +114,12 @@ public class Token implements java.io.Serializable {
         this.image = image;
     }
 
+    public Token(int kind, String image, int num) {
+        this.kind = kind;
+        this.image = image;
+        this.intImage = num;
+    }
+
     public Token(int kind, int num) {
         this.kind = kind;
         this.intImage = num;

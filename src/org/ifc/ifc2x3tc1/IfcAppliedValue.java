@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public abstract class IfcAppliedValue extends InternalAccessClass implements IfcObjectReferenceSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcText","IfcAppliedValueSelect","IfcMeasureWithUnit","IfcDateTimeSelect","IfcDateTimeSelect"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,47402,268435456,8704,268435456,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

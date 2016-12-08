@@ -221,7 +221,7 @@ public class IfcStepParser {
             } else if (object instanceof DOUBLE) {
                 DOUBLE doubleObject = (DOUBLE) object;
                 try {
-                    DOUBLE integerParameter = (DOUBLE) ObjectFactoryMap.createInstance(type);
+                    DOUBLE integerParameter = (DOUBLE) ObjectFactory.createInstance(type);
                     integerParameter.setValue(doubleObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -231,7 +231,7 @@ public class IfcStepParser {
             } else if (object instanceof STRING) {
                 STRING stringObject = (STRING) object;
                 try {
-                    STRING stringParameter = (STRING) ObjectFactoryMap.createInstance(type);
+                    STRING stringParameter = (STRING) ObjectFactory.createInstance(type);
                     stringParameter.setValue(stringObject);
                     parameters.set(i, stringParameter);
                 } catch (Exception e) {
@@ -253,7 +253,7 @@ public class IfcStepParser {
             } else if (object instanceof INTEGER) {
                 INTEGER integerObject = (INTEGER) object;
                 try {
-                    INTEGER integerParameter = (INTEGER) ObjectFactoryMap.createInstance(type);
+                    INTEGER integerParameter = (INTEGER) ObjectFactory.createInstance(type);
                     integerParameter.setValue(integerObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -263,7 +263,7 @@ public class IfcStepParser {
             } else if (object instanceof ENUM) {
                 ENUM enumObject = (ENUM) object;
                 try {
-                    CloneableObject enumParameter = (ENUM) ObjectFactoryMap.createInstance(type);
+                    CloneableObject enumParameter = (ENUM) ObjectFactory.createInstance(type);
                     ((ENUM) enumParameter).setValue(enumObject.stringValue);
                     parameters.set(i, enumParameter);
                 } catch (Exception e) {
@@ -273,7 +273,7 @@ public class IfcStepParser {
             } else if (object instanceof BINARY) {
                 BINARY byteObject = (BINARY) object;
                 try {
-                    BINARY byteParameter = (BINARY) ObjectFactoryMap.createInstance(type);
+                    BINARY byteParameter = (BINARY) ObjectFactory.createInstance(type);
                     byteParameter.setValue(byteObject.value);
                     parameters.set(i, byteParameter);
                 } catch (Exception e) {
@@ -283,15 +283,17 @@ public class IfcStepParser {
             } else if (object instanceof NodeObject) {
                 NodeObject inlineObject = (NodeObject) object;
                 try {
-                    String className = inlineObject.getClassName();
-                    CloneableObject inlineParameter = (CloneableObject) ObjectFactoryMap.createInstance(className);
+//                    String className = inlineObject.getClassName();
+                    int classHash = inlineObject.getClassHash();
+                    CloneableObject inlineParameter =
+                            (CloneableObject) ObjectFactory.createInstance(classHash);
 
                     if (inlineParameter instanceof InternalAccessClass) {
-                        resolveCollections(inlineObject, className);
+                        resolveCollections(inlineObject, classHash);
                         InternalAccess.initialize((InternalAccessClass) inlineParameter, inlineObject.getParameter());
                         parameters.set(i, inlineParameter);
                     } else {
-                        resolveCollections(inlineObject, className);
+                        resolveCollections(inlineObject, classHash);
                         ((TypeInterface) inlineParameter).setValue(inlineObject
                                 .getParameter().get(0));
                         parameters.set(i, inlineParameter);
@@ -303,7 +305,120 @@ public class IfcStepParser {
             } else if (object instanceof LOGICAL) {
                 LOGICAL logicalObject = (LOGICAL) object;
                 try {
-                    Object classObject = ObjectFactoryMap.createInstance(type);
+                    Object classObject = ObjectFactory.createInstance(type);
+                    if (BOOLEAN.class.isAssignableFrom(classObject.getClass())) {
+                        BOOLEAN booleanParameter = (BOOLEAN) classObject;
+                        booleanParameter.setValue(logicalObject.value);
+                        parameters.set(i, booleanParameter);
+                    } else {
+                        LOGICAL logicalParameter = (LOGICAL) classObject;
+                        logicalParameter.setValue(logicalObject.value);
+                        parameters.set(i, logicalParameter);
+                    }
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return nodeObject;
+    }
+
+    private static Object resolveCollections(NodeObject nodeObject, int hash) {
+
+        ArrayList<CloneableObject> parameters = nodeObject.getParameter();
+        for (int i = 0; i < parameters.size(); i++) {
+            CloneableObject object = parameters.get(i);
+            if (object instanceof InstanceLineNoRef) {
+                parameters.set(i, entityInstanceNameMap
+                        .get(((InstanceLineNoRef) object).getLineNr()));
+            } else if (object instanceof DOUBLE) {
+                DOUBLE doubleObject = (DOUBLE) object;
+                try {
+                    DOUBLE integerParameter = (DOUBLE) ObjectFactory.createInstance(hash);
+                    integerParameter.setValue(doubleObject.value);
+                    parameters.set(i, integerParameter);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof STRING) {
+                STRING stringObject = (STRING) object;
+                try {
+                    STRING stringParameter = (STRING) ObjectFactory.createInstance(hash);
+                    stringParameter.setValue(stringObject);
+                    parameters.set(i, stringParameter);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof LIST) {
+                @SuppressWarnings("unchecked")
+                LIST<CloneableObject> listObject = (LIST<CloneableObject>) object;
+                try {
+                    String className = listObject.getClass().getCanonicalName();
+                    String nextType = className.substring(
+                            className.indexOf("<"), className.lastIndexOf(">"));
+                    resolveCollections(nodeObject, nextType);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof INTEGER) {
+                INTEGER integerObject = (INTEGER) object;
+                try {
+                    INTEGER integerParameter = (INTEGER) ObjectFactory.createInstance(hash);
+                    integerParameter.setValue(integerObject.value);
+                    parameters.set(i, integerParameter);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof ENUM) {
+                ENUM enumObject = (ENUM) object;
+                try {
+                    CloneableObject enumParameter = (ENUM) ObjectFactory.createInstance(hash);
+                    ((ENUM) enumParameter).setValue(enumObject.stringValue);
+                    parameters.set(i, enumParameter);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof BINARY) {
+                BINARY byteObject = (BINARY) object;
+                try {
+                    BINARY byteParameter = (BINARY) ObjectFactory.createInstance(hash);
+                    byteParameter.setValue(byteObject.value);
+                    parameters.set(i, byteParameter);
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof NodeObject) {
+                NodeObject inlineObject = (NodeObject) object;
+                try {
+                    int classHash = inlineObject.getClassHash();
+                    CloneableObject inlineParameter = (CloneableObject) ObjectFactory.createInstance(classHash);
+
+                    if (inlineParameter instanceof InternalAccessClass) {
+                        resolveCollections(inlineObject, classHash);
+                        InternalAccess.initialize((InternalAccessClass) inlineParameter, inlineObject.getParameter());
+                        parameters.set(i, inlineParameter);
+                    } else {
+                        resolveCollections(inlineObject, classHash);
+                        ((TypeInterface) inlineParameter).setValue(inlineObject
+                                .getParameter().get(0));
+                        parameters.set(i, inlineParameter);
+                    }
+                } catch (Exception e) {
+                    errorCounter++;
+                    e.printStackTrace();
+                }
+            } else if (object instanceof LOGICAL) {
+                LOGICAL logicalObject = (LOGICAL) object;
+                try {
+                    Object classObject = ObjectFactory.createInstance(hash);
                     if (BOOLEAN.class.isAssignableFrom(classObject.getClass())) {
                         BOOLEAN booleanParameter = (BOOLEAN) classObject;
                         booleanParameter.setValue(logicalObject.value);
@@ -328,14 +443,13 @@ public class IfcStepParser {
         for (int i = 0; i < parameters.size(); i++) {
             Object object = parameters.get(i);
             if (object instanceof InstanceLineNoRef) {
-                parameters.set(i, entityInstanceNameMap
-                        .get(((InstanceLineNoRef) object).getLineNr()));
+                parameters.set(i, entityInstanceNameMap.get(((InstanceLineNoRef) object).getLineNr()));
             } else if (object instanceof DOUBLE) {
                 DOUBLE doubleObject = (DOUBLE) object;
-                String[] parameterList = null;
+                int[] parameterList = null;
                 try {
-                    parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    DOUBLE doubleParameter = (DOUBLE) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
+                    parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    DOUBLE doubleParameter = (DOUBLE) ObjectFactory.createInstance(parameterList[i]);
                     doubleParameter.setValue(doubleObject.value);
                     parameters.set(i, doubleParameter);
                 } catch (Exception e) {
@@ -349,10 +463,10 @@ public class IfcStepParser {
                 }
             } else if (object instanceof STRING) {
                 STRING stringObject = (STRING) object;
-                String[] parameterList = null;
+                int[] parameterList = null;
                 try {
-                    parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    STRING stringParameter = (STRING) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
+                    parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    STRING stringParameter = (STRING) ObjectFactory.createInstance(parameterList[i]);
                     stringParameter.setValue(stringObject);
                     parameters.set(i, stringParameter);
                 } catch (Exception e) {
@@ -370,35 +484,40 @@ public class IfcStepParser {
                 @SuppressWarnings("unchecked")
                 LIST<CloneableObject> listObject = (LIST<CloneableObject>) object;
                 try {
-                    String[] parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    String className = parameterList[i];
+                    int[] parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    int hash = parameterList[i];
+                    boolean isList = (hash & ObjectFactory.LIST_TYPE) == ObjectFactory.LIST_TYPE;
+                    boolean isSet = (hash & ObjectFactory.SET_TYPE) == ObjectFactory.SET_TYPE;
 
-                    if ((className.contains("SET") || className.contains("LIST"))) {
-                        String nextType = className.substring(
-                                className.indexOf("<") + 1,
-                                className.lastIndexOf(">"));
+                    if (isList || isSet) {
+                        hash &= ~ObjectFactory.LIST_TYPE;
+                        hash &= ~ObjectFactory.SET_TYPE;
+
                         NodeObject dummyObject = new NodeObject();
                         dummyObject.setParameter(listObject);
-                        dummyObject.setClassName(nextType);
-                        resolveCollections(dummyObject, nextType);
+                        dummyObject.setClassHash(hash);
+                        resolveCollections(dummyObject, hash);
 
-                        if (parameterList[i].contains("SET")) {
+                        if (isSet) {
                             parameters.set(i, new SET<CloneableObject>(dummyObject.getParameter()));
                         } else {
                             parameters.set(i, new LIST<CloneableObject>(dummyObject.getParameter()));
                         }
                     } else {
+                        String className = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject)[i];
+
                         Class<?> parameterClass = Class.forName(PACKAGE_NAME + className);
                         String superClassName = parameterClass.getGenericSuperclass().toString();
                         superClassName = superClassName.replace(PACKAGE_NAME, "");
                         String nextType = superClassName.substring(
                                 superClassName.indexOf("<") + 1,
                                 superClassName.lastIndexOf(">"));
+
                         NodeObject dummyObject = new NodeObject();
                         dummyObject.setParameter(listObject);
                         dummyObject.setClassName(nextType);
                         resolveCollections(dummyObject, nextType);
-                        TypeInterface TypeInterface = (TypeInterface) ObjectFactoryMap.createInstance(className.toUpperCase());
+                        TypeInterface TypeInterface = (TypeInterface) ObjectFactory.createInstance(className.toUpperCase());
                         TypeInterface.setValue(dummyObject.getParameter());
                         parameters.set(i, TypeInterface);
                     }
@@ -411,10 +530,11 @@ public class IfcStepParser {
                 }
             } else if (object instanceof ENUM) {
                 ENUM enumObject = (ENUM) object;
-                String[] parameterList = null;
+                int[] parameterList = null;
                 try {
-                    parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    CloneableObject enumParameter = (ENUM) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
+                    parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    CloneableObject enumParameter = (ENUM) ObjectFactory.createInstance(parameterList[i]);
+
                     ((ENUM) enumParameter).setValue(enumObject.stringValue);
                     parameters.set(i, enumParameter);
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -438,10 +558,10 @@ public class IfcStepParser {
                 }
             } else if (object instanceof INTEGER) {
                 INTEGER integerObject = (INTEGER) object;
-                String[] parameterList = null;
+                int[] parameterList = null;
                 try {
-                    parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    INTEGER integerParameter = (INTEGER) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
+                    parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    INTEGER integerParameter = (INTEGER) ObjectFactory.createInstance(parameterList[i]);
                     integerParameter.setValue(integerObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -456,10 +576,10 @@ public class IfcStepParser {
                 }
             } else if (object instanceof BINARY) {
                 BINARY byteObject = (BINARY) object;
-                String[] parameterList = null;
+                int[] parameterList = null;
                 try {
-                    parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    BINARY byteParameter = (BINARY) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
+                    parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    BINARY byteParameter = (BINARY) ObjectFactory.createInstance(parameterList[i]);
                     byteParameter.setValue(byteObject.value);
                     parameters.set(i, byteParameter);
                 } catch (Exception e) {
@@ -474,15 +594,18 @@ public class IfcStepParser {
             } else if (object instanceof NodeObject) {
                 NodeObject inlineObject = (NodeObject) object;
                 try {
-                    String className = inlineObject.getClassName();
-                    CloneableObject inlineParameter = (CloneableObject) ObjectFactoryMap.createInstance(className);
+//                    String className = inlineObject.getClassName();
+                    int classHash = inlineObject.getClassHash();
+                    CloneableObject inlineParameter = (CloneableObject) ObjectFactory.createInstance(classHash);
 
                     if (inlineParameter instanceof InternalAccessClass) {
-                        resolveCollections(inlineObject, className);
-                        InternalAccess.initialize((InternalAccessClass) inlineParameter, inlineObject.getParameter());
+                        resolveCollections(inlineObject, classHash);
+                        InternalAccess.initialize((InternalAccessClass) inlineParameter,
+                                inlineObject.getParameter());
+
                         parameters.set(i, inlineParameter);
                     } else {
-                        resolveCollections(inlineObject, className);
+                        resolveCollections(inlineObject, classHash);
                         ((TypeInterface) inlineParameter).setValue(inlineObject
                                 .getParameter().get(0));
                         parameters.set(i, inlineParameter);
@@ -499,17 +622,16 @@ public class IfcStepParser {
                 LOGICAL logicalObject = (LOGICAL) object;
                 Boolean tester = logicalObject.value;
                 try {
-                    String[] parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-//                    System.out.println(PACKAGE_NAME + parameterList[i]);
-                    String classname = parameterList[i];
-                    // Class<?> classObject = Class.forName(PACKAGE_NAME + parameterList[i]);
-                    if (classname.equals("BOOLEAN")) {
+                    int[] parameterList = InternalAccess.getNonInverseHashAttributeTypes(ClassInterfaceObject);
+                    int classHash = parameterList[i];
+
+                    if (classHash == 47202 + 59) {
                         parameters.set(i, tester ? BOOLEAN.BooleanTrue : BOOLEAN.BooleanFalse);
-                    } else if (classname.equals("IfcBoolean")) {
+                    } else if (classHash == 4564 + 59) {
                         parameters.set(i, new IfcBoolean(logicalObject.value));
-                    } else if (classname.equals("LOGICAL")) {
+                    } else if (classHash == 47225 + 59) {
                         parameters.set(i, new LOGICAL(logicalObject.value));
-                    } else if (classname.equals("IfcLogical")) {
+                    } else if (classHash == 28779 + 59) {
                         parameters.set(i, new IfcLogical(logicalObject.value));
                     } else {
                         throw new Exception();

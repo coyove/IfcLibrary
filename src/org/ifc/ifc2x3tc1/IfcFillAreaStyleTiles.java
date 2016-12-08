@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcFillAreaStyleTiles extends IfcGeometricRepresentationItem implements IfcFillStyleSelect, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcOneDirectionRepeatFactor","SET<IfcFillAreaStyleTileShapeSelect>","IfcPositiveRatioMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{59103,1073752222,12756};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

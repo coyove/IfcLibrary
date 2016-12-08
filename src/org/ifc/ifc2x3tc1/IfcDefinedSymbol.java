@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcDefinedSymbol extends IfcGeometricRepresentationItem implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcDefinedSymbolSelect","IfcCartesianTransformationOperator2D"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,24308};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

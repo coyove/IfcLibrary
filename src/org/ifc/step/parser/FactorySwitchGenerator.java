@@ -1,11 +1,12 @@
 package org.ifc.step.parser;
 
-import org.ifc.ifc2x3tc1.INTEGER;
-
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.lang.instrument.Instrumentation;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by zezhong on 2016/12/7.
@@ -20,88 +21,131 @@ public class FactorySwitchGenerator {
     }
 
     private static String translate(String name) {
-        return ObjectFactoryMap.createInstance(name).getClass().getSimpleName() + "()";
-    }
-
-    private static int hash(String str, int b) {
-        char value[] = str.toCharArray();
-        int h = 0;
-
-        for (int i = 0; i < value.length; i++) {
-            h = (h + value[i] * (b / 8)) ^ b;
-            // 2: -474 -2 59675
-            // 8: -812 -4 38226
-            // 4: -716 -2 52007
-            // 5: -877 -3 43466
-        }
-
-        return h;
+        return ObjectFactory.createInstance(name).getClass().getSimpleName() + "()";
     }
 
     private static int hash2(String str, int a1, int a2) {
         char value[] = str.toCharArray();
         int h = 1;
 
-        for (int i = 0; i < value.length; i++) {
-            h = (h + value[i] * (a1 / a2)) ^ a1;
-
+        for (char aValue : value) {
+            h = (h + aValue * (a1 / a2)) ^ a1;
         }
 
         return h;
     }
 
-    private static long[] testhash(Set<String> names, int b) {
-        Set<Integer> hashes = new HashSet<Integer>();
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-
-        for (String name : names) {
-            int h = hash(name, b);
-            if (h > max) max = h;
-            if (h < min) min = h;
-
-            hashes.add(h);
+    private static boolean classExists(String n) {
+        try {
+            ObjectFactory.createInstance(n);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-
-        return new long[]{hashes.size() - names.size(), (long) max - (long) min};
     }
 
-    private static long[] testhash2(Set<String> names, int a1, int a2) {
-        Set<Integer> hashes = new HashSet<Integer>();
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
+    public static void generate3() throws Exception {
+        Pattern reg = Pattern.compile("nonInverseAttributes\\s=\\snew\\sString\\[\\]\\{\\S*\\}");
+        Pattern reg2 = Pattern.compile("nonInverseHashAttributes\\s=\\snew\\sint\\[\\]\\{\\S*\\}");
 
-        for (String name : names) {
-            int h = hash2(name, a1, a2);
-            if (h > max) max = h;
-            if (h < min) min = h;
+        for (File file : new File("./src/org/ifc/ifc2x3tc1").listFiles()) {
+            if (file.isFile()) {
+                Path p = Paths.get("./src/org/ifc/ifc2x3tc1/" + file.getName());
+                String classname = file.getName().substring(0, file.getName().length() - 5);
 
-            hashes.add(h);
-        }
+                List<String> lines = Files.readAllLines(p);
+                String[] names = new String[]{};
+                int originalLine = -1;
+                int hashLine = -1;
 
-        return new long[]{hashes.size() - names.size(), (long) max - (long) min};
-    }
+                for (int i1 = 0; i1 < lines.size(); i1++) {
+                    Matcher m = reg.matcher(lines.get(i1));
+                    if (m.find()) {
+                        String tmp = m.group();
+                        names = tmp.substring(tmp.indexOf('{') + 1, tmp.lastIndexOf('}')).split(",");
+                        for (int i2 = 0; i2 < names.length; i2++) {
+                            names[i2] = names[i2].replace("\"", "");
+                        }
 
-    public static void generate() throws Exception {
-        Set<String> names = ObjectFactoryMap.FACTORY_MAP.keySet();
+                        originalLine = i1;
+                    }
 
-//        for (int i1 = -10000; i1 < Integer.MAX_VALUE; i1++) {
-//            long[] w = testhash(names, i1);
-//            if (Math.abs(w[0]) < 5 && Math.abs(w[1]) < 70000) {
-//                System.out.println(i1 + " " + w[0] + " " + w[1]);
-//            }
-//        }
-        for (int i1 = -10000; i1 < Integer.MAX_VALUE; i1++) {
-            for (int j1 = 1; j1 < 33; j1++) {
-                long[] w = testhash2(names, i1, j1);
-                if (Math.abs(w[1]) < 30000) {
-                    System.out.println(i1 + " " + j1 + " " + w[0] + " " + w[1]);
-                    break;
+                    if (reg2.matcher(lines.get(i1)).find()) {
+                        hashLine = i1;
+                    }
+                }
+
+                if (names.length == 1 && names[0].isEmpty()) {
+                    names = new String[0];
+                }
+
+                if (originalLine != -1) {
+                    int[] hashes = new int[names.length];
+                    for (int i = 0; i < names.length; i++) {
+                        String name = names[i].toUpperCase();
+                        if (name.contains("LIST<")) {
+                            name = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
+                            hashes[i] = ObjectFactory.hash(name) | ObjectFactory.LIST_TYPE;
+                        } else if (name.contains("SET<")) {
+                            name = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
+                            hashes[i] = ObjectFactory.hash(name) | ObjectFactory.SET_TYPE;
+                        } else {
+                            if (!classExists(name)) {
+                                hashes[i] = ObjectFactory.SKIP_TYPE;
+                            } else {
+                                hashes[i] = ObjectFactory.hash(name);
+                            }
+                        }
+                    }
+
+                    StringBuilder sb =
+                            new StringBuilder("private static final int[] nonInverseHashAttributes = " +
+                                    "new int[]{");
+                    for (int i = 0; i < hashes.length; i++) {
+                        sb.append(hashes[i]);
+                        if (i < hashes.length - 1) {
+                            sb.append(",");
+                        }
+                    }
+
+                    sb.append("};");
+                    sb.append("int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}");
+
+                    if (hashLine == -1) {
+                        lines.add(originalLine + 1, sb.toString());
+                    } else {
+                        lines.set(hashLine, sb.toString());
+                    }
+
+                    Files.write(p, lines);
                 }
             }
         }
+    }
 
-        if (1 == 1) return;
+    public static void generate2() {
+        TreeMap<Integer, String> map = new TreeMap<Integer, String>();
+        int d = 0;
+        for (Map.Entry<String, ObjectFactory.ClassBuilder> c : ObjectFactory.FACTORY_MAP.entrySet()) {
+            int k = ObjectFactory.hash(c.getKey());
+            if (map.containsKey(k)) {
+                d++;
+            } else {
+                map.put(k, c.getKey());
+            }
+        }
+
+        for (Map.Entry<Integer, String> e : map.entrySet()) {
+            System.out.println("FACTORY_ARRAY[" + (e.getKey() - map.firstKey()) + "] = new " +
+                    ObjectFactory.createInstance(e.getValue()).getClass().getSimpleName() +
+            "Builder();");
+        }
+
+        System.out.println(map.firstKey());
+    }
+
+    public static void generate() throws Exception {
+        Set<String> names = ObjectFactory.FACTORY_MAP.keySet();
 
         Map<Integer, Set<String>> lengths = new HashMap<Integer, Set<String>>();
 

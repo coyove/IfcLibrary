@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcLightSourcePositional extends IfcLightSource implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcColourRgb","IfcNormalisedRatioMeasure","IfcNormalisedRatioMeasure","IfcCartesianPoint","IfcPositiveLengthMeasure","IfcReal","IfcReal","IfcReal"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,5752,34149,34149,51826,35714,47572,47572,47572};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

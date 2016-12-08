@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSubedge extends IfcEdge implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcVertex","IfcVertex","IfcEdge"};
+private static final int[] nonInverseHashAttributes = new int[]{42125,42125,47034};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

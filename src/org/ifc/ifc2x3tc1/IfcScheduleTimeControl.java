@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcScheduleTimeControl extends IfcControl implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcLabel","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcDateTimeSelect","IfcTimeMeasure","IfcTimeMeasure","IfcTimeMeasure","IfcTimeMeasure","IfcTimeMeasure","BOOLEAN","IfcDateTimeSelect","IfcTimeMeasure","IfcTimeMeasure","IfcPositiveRatioMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,3773,268435456,268435456,268435456,268435456,268435456,268435456,268435456,268435456,30385,30385,30385,30385,30385,47261,268435456,30385,30385,12756};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

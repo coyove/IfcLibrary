@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcBoundaryFaceCondition extends IfcBoundaryCondition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcModulusOfSubgradeReactionMeasure","IfcModulusOfSubgradeReactionMeasure","IfcModulusOfSubgradeReactionMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,34123,34123,34123};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

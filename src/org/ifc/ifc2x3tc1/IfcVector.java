@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcVector extends IfcGeometricRepresentationItem implements IfcVectorOrDirection, ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcDirection","IfcLengthMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{5701,30921};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

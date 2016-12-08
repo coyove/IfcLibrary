@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTendon extends IfcReinforcingElement implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcLabel","IfcObjectPlacement","IfcProductRepresentation","IfcIdentifier","IfcLabel","IfcTendonTypeEnum","IfcPositiveLengthMeasure","IfcAreaMeasure","IfcForceMeasure","IfcPressureMeasure","IfcNormalisedRatioMeasure","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,3773,268435456,37475,44139,3773,38217,35714,29018,44544,116,34149,35714,35714};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

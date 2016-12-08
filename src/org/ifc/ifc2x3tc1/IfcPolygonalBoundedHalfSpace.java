@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcPolygonalBoundedHalfSpace extends IfcHalfSpaceSolid implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcSurface","BOOLEAN","IfcAxis2Placement3D","IfcBoundedCurve"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,47261,46787,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

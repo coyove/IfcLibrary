@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcEnvironmentalImpactValue extends IfcAppliedValue implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcText","IfcAppliedValueSelect","IfcMeasureWithUnit","IfcDateTimeSelect","IfcDateTimeSelect","IfcLabel","IfcEnvironmentalImpactCategoryEnum","IfcLabel"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,47402,268435456,8704,268435456,268435456,3773,17154,3773};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcRelInteractionRequirements extends IfcRelConnects implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcCountMeasure","IfcNormalisedRatioMeasure","IfcSpatialStructureElement","IfcSpaceProgram","IfcSpaceProgram"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,43285,34149,268435456,43308,43308};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

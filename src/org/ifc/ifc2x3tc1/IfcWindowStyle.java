@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcWindowStyle extends IfcTypeProduct implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcLabel","SET<IfcPropertySetDefinition>","LIST<IfcRepresentationMap>","IfcLabel","IfcWindowStyleConstructionEnum","IfcWindowStyleOperationEnum","BOOLEAN","BOOLEAN"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,3773,1073753902,-2147420789,3773,14915,33239,47261,47261};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

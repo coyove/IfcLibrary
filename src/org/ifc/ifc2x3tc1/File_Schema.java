@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class File_Schema extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"LIST<SchemaName>"};
+private static final int[] nonInverseHashAttributes = new int[]{-2147451627};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

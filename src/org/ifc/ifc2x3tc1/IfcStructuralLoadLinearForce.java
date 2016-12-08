@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcStructuralLoadLinearForce extends IfcStructuralLoadStatic implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcLinearForceMeasure","IfcLinearForceMeasure","IfcLinearForceMeasure","IfcLinearMomentMeasure","IfcLinearMomentMeasure","IfcLinearMomentMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,43708,43708,43708,11153,11153,11153};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

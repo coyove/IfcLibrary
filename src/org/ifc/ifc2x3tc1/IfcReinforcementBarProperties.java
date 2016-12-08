@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcReinforcementBarProperties extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcAreaMeasure","IfcLabel","IfcReinforcingBarSurfaceEnum","IfcLengthMeasure","IfcPositiveLengthMeasure","IfcCountMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{29018,3773,4889,30921,35714,43285};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

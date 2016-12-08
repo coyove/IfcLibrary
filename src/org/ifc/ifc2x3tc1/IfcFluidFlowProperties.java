@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcFluidFlowProperties extends IfcPropertySetDefinition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcPropertySourceEnum","IfcTimeSeries","IfcTimeSeries","IfcTimeSeries","IfcMaterial","IfcTimeSeries","IfcLabel","IfcThermodynamicTemperatureMeasure","IfcThermodynamicTemperatureMeasure","IfcTimeSeries","IfcTimeSeries","IfcDerivedMeasureValue","IfcPositiveRatioMeasure","IfcLinearVelocityMeasure","IfcPressureMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,33845,268435456,268435456,268435456,52047,268435456,3773,193,193,268435456,268435456,268435456,12756,12191,116};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

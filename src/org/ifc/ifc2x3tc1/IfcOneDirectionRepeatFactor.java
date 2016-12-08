@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcOneDirectionRepeatFactor extends IfcGeometricRepresentationItem implements ClassInterface, IfcHatchLineDistanceSelect
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcVector"};
+private static final int[] nonInverseHashAttributes = new int[]{42143};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

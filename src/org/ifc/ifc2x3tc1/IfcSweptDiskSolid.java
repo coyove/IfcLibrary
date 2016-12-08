@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSweptDiskSolid extends IfcSolidModel implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCurve","IfcPositiveLengthMeasure","IfcPositiveLengthMeasure","IfcParameterValue","IfcParameterValue"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,35714,35714,52209,52209};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

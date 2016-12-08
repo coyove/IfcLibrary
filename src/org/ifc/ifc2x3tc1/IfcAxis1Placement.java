@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcAxis1Placement extends IfcPlacement implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcCartesianPoint","IfcDirection"};
+private static final int[] nonInverseHashAttributes = new int[]{51826,5701};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

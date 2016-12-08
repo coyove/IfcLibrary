@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcFailureConnectionCondition extends IfcStructuralConnectionCondition implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcForceMeasure","IfcForceMeasure","IfcForceMeasure","IfcForceMeasure","IfcForceMeasure","IfcForceMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,44544,44544,44544,44544,44544,44544};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

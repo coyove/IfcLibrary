@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCartesianTransformationOperator2DnonUniform extends IfcCartesianTransformationOperator2D implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcDirection","IfcDirection","IfcCartesianPoint","DOUBLE","DOUBLE"};
+private static final int[] nonInverseHashAttributes = new int[]{5701,5701,51826,2619,2619};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

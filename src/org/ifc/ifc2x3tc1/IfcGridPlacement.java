@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcGridPlacement extends IfcObjectPlacement implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcVirtualGridIntersection","IfcVirtualGridIntersection"};
+private static final int[] nonInverseHashAttributes = new int[]{27525,27525};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

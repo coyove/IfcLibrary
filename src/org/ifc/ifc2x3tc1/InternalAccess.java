@@ -21,6 +21,11 @@ public class InternalAccess
 	{
 		return internalAccessClass.getNonInverseAttributeTypes();
 	}
+
+	public static int[] getNonInverseHashAttributeTypes(InternalAccessClass internalAccessClass)
+	{
+		return internalAccessClass.getNonInverseHashAttributeTypes();
+	}
 	
 	public static void setStepLineNumber(InternalAccessClass internalAccessClass, int number)
 	{

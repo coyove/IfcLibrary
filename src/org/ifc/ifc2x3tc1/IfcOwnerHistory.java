@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcOwnerHistory extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcPersonAndOrganization","IfcApplication","IfcStateEnum","IfcChangeActionEnum","IfcTimeStamp","IfcPersonAndOrganization","IfcApplication","IfcTimeStamp"};
+private static final int[] nonInverseHashAttributes = new int[]{36642,6847,6014,46912,6007,36642,6847,6007};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

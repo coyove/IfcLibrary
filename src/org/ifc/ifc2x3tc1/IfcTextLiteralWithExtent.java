@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcTextLiteralWithExtent extends IfcTextLiteral implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcPresentableText","IfcAxis2Placement","IfcTextPath","IfcPlanarExtent","IfcBoxAlignment"};
+private static final int[] nonInverseHashAttributes = new int[]{11272,268435456,41433,41115,43430};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

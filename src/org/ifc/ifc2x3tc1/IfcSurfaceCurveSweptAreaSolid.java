@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcSurfaceCurveSweptAreaSolid extends IfcSweptAreaSolid implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcProfileDef","IfcAxis2Placement3D","IfcCurve","IfcParameterValue","IfcParameterValue","IfcSurface"};
+private static final int[] nonInverseHashAttributes = new int[]{268435456,46787,268435456,52209,52209,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

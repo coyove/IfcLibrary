@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcBooleanResult extends IfcGeometricRepresentationItem implements ClassInterface, IfcCsgSelect, IfcBooleanOperand
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcBooleanOperator","IfcBooleanOperand","IfcBooleanOperand"};
+private static final int[] nonInverseHashAttributes = new int[]{8733,268435456,268435456};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -20,19 +20,19 @@ import org.ifc.step.parser.util.*;
  * or contact us directly: <a href='mailto:info@ifctoolsproject.com'>info@ifctoolsproject.com</a><br>
  */
 public class StepTokenizer {
-    public final static int EOF         = 0;
-    public final static int LPAREN      = 1;
-    public final static int RPAREN      = 2;
-    public final static int SEMICOLON   = 3;
-    public final static int COMMA       = 4;
-    public final static int DOLLAR      = 5;
-    public final static int STAR        = 6;
-    public final static int INTEGER     = 7;
-    public final static int REAL        = 8;
-    public final static int STRING      = 9;
+    public final static int EOF = 0;
+    public final static int LPAREN = 1;
+    public final static int RPAREN = 2;
+    public final static int SEMICOLON = 3;
+    public final static int COMMA = 4;
+    public final static int DOLLAR = 5;
+    public final static int STAR = 6;
+    public final static int INTEGER = 7;
+    public final static int REAL = 8;
+    public final static int STRING = 9;
     public final static int ENUMERATION = 10;
-    public final static int BINARY      = 11;
-    public final static int STANDARD_KEYWORD     = 12;
+    public final static int BINARY = 11;
+    public final static int STANDARD_KEYWORD = 12;
     public final static int ENTITY_INSTANCE_NAME = 13;
 
     private static long stepCounter = 0;
@@ -82,7 +82,7 @@ public class StepTokenizer {
         stepCounter++;
         InternalAccessClass object = null;
         try {
-            object = (InternalAccessClass) ObjectFactoryMap.createInstance(node1.getClassName());
+            object = (InternalAccessClass) ObjectFactory.createInstance(node1.getClassHash());
             InternalAccess.setStepParameter(object, node1.getParameter());
             InternalAccess.setStepLineNumber(object, node1.getLineNumber());
             nodeMap.put(node1.getLineNumber(), object);
@@ -136,26 +136,26 @@ public class StepTokenizer {
     private static void parseHeader(Token t) throws Exception {
         StepTokenizer.getNextToken(); // ";"
         node.reset();
-        node.setClassName(StepTokenizer.getNextToken().image);
+        node.setClassHash(StepTokenizer.getNextToken().intImage);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Description = (File_Description) ObjectFactoryMap.createInstance(node.getClassName());
+        file_Description = (File_Description) ObjectFactory.createInstance(node.getClassHash());
         InternalAccess.setStepParameter(file_Description, node.getParameter());
         node.reset();
 
         node.reset();
-        node.setClassName(StepTokenizer.getNextToken().image);
+        node.setClassHash(StepTokenizer.getNextToken().intImage);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Name = (File_Name) ObjectFactoryMap.createInstance(node.getClassName());
+        file_Name = (File_Name) ObjectFactory.createInstance(node.getClassHash());
         InternalAccess.setStepParameter(file_Name, node.getParameter());
         node.reset();
 
         node.reset();
-        node.setClassName(StepTokenizer.getNextToken().image);
+        node.setClassHash(StepTokenizer.getNextToken().intImage);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Schema = (File_Schema) ObjectFactoryMap.createInstance(node.getClassName());
+        file_Schema = (File_Schema) ObjectFactory.createInstance(node.getClassHash());
         InternalAccess.setStepParameter(file_Schema, node.getParameter());
         LIST<STRING> fileSchemes = (LIST<STRING>) InternalAccess.getStepParameter(file_Schema).get(0);
         String fileSchema = fileSchemes.get(0).getDecodedValue();
@@ -175,7 +175,11 @@ public class StepTokenizer {
                 }
                 case STANDARD_KEYWORD: {
                     NodeObject typedParameter = new NodeObject();
-                    typedParameter.setClassName(t.image);
+//                    typedParameter.setClassName(t.image);
+                    if (t.intImage == 0) {
+                        System.out.println(t.image);
+                    }
+                    typedParameter.setClassHash(t.intImage);
                     boolean inlineEnd = false;
                     while (!inlineEnd) {
                         t = StepTokenizer.getNextToken();
@@ -267,12 +271,14 @@ public class StepTokenizer {
 
     private static void parse(BufferedReaderEx br) throws Exception {
         __input_stream = br;
+        int header = ObjectFactory.hash("HEADER");
 
         for (Token t = StepTokenizer.getNextToken();
              t.kind != EOF;
              t = StepTokenizer.getNextToken()) {
 
-            if (t.image.startsWith("HEADER")) {
+//            if (t.image.startsWith("HEADER")) {
+            if (t.intImage == header) { // 2696 is the hash of "HEADER"
                 parseHeader(t);
             }
 
@@ -282,7 +288,7 @@ public class StepTokenizer {
                 node.setLineNumber(t.intImage);
                 StepTokenizer.getNextToken(); // "="
 
-                node.setClassName(StepTokenizer.getNextToken().image);
+                node.setClassHash(StepTokenizer.getNextToken().intImage);
                 StepTokenizer.getNextToken(); // "("
                 parseParameters(t);
 
@@ -301,7 +307,8 @@ public class StepTokenizer {
                 return new InstanceLineNoRef(t.intImage);
             case STANDARD_KEYWORD: {
                 NodeObject typedParameter = new NodeObject();
-                typedParameter.setClassName(t.image);
+//                typedParameter.setClassName(t.image);
+                typedParameter.setClassHash(t.intImage);
                 StepTokenizer.getNextToken();
                 boolean inlineEnd = false;
                 while (!inlineEnd) {
@@ -449,34 +456,33 @@ public class StepTokenizer {
             case '7':
             case '8':
             case '9':
-            // Real number
-            UnsafeDoubleParser.init('.');
+                // Real number
+                UnsafeDoubleParser.init('.');
 
-            while (nextChar != ',' && nextChar != ')') {
+                while (nextChar != ',' && nextChar != ')') {
 //                __static_keyword_buf[++idx] = (char) nextChar;
-                UnsafeDoubleParser.push((char) nextChar);
-                nextChar = __input_stream.next();
-            }
+                    UnsafeDoubleParser.push((char) nextChar);
+                    nextChar = __input_stream.next();
+                }
 
-            // return new Token(REAL, new String(__static_keyword_buf, 0, idx + 1));
-            return new Token(REAL, UnsafeDoubleParser.evalDouble());
+                // return new Token(REAL, new String(__static_keyword_buf, 0, idx + 1));
+                return new Token(REAL, UnsafeDoubleParser.evalDouble());
 //        } else {
             default:
-            // Enum
-            int idx = -1;
-            while (nextChar != '.') {
-                __static_keyword_buf[++idx] = (char) nextChar;
-                nextChar = __input_stream.next();
-            }
+                // Enum
+                int idx = -1;
+                while (nextChar != '.') {
+                    __static_keyword_buf[++idx] = (char) nextChar;
+                    nextChar = __input_stream.next();
+                }
 
-            __input_stream.commit();
-            return new Token(ENUMERATION, new String(__static_keyword_buf, 0, idx + 1));
+                __input_stream.commit();
+                return new Token(ENUMERATION, new String(__static_keyword_buf, 0, idx + 1));
         }
     }
 
     private static Token readName() {
-//        int nextChar = __input_stream.next();
-        int nextChar;
+        int nextChar; // = __input_stream.next();
         int num = 0;
 
 //        while (nextChar != ',' && nextChar != ')' && nextChar != '=') {
@@ -499,16 +505,20 @@ public class StepTokenizer {
     }
 
     private static Token readKeyword(char init) {
-        int idx = 0;
-        __static_keyword_buf[0] = init;
+//        int idx = 0;
+        int h = (init * 13) ^ 0x16ADA;
+
+//        __static_keyword_buf[0] = init;
         int nextChar = __input_stream.next();
 
         while (nextChar != '(' && nextChar != ';') {
-            __static_keyword_buf[++idx] = (char) nextChar;
+//            __static_keyword_buf[++idx] = (char) nextChar;
+            h = (h + nextChar * 13) ^ 0x16ADA;
             nextChar = __input_stream.next();
         }
 
-        return new Token(STANDARD_KEYWORD, new String(__static_keyword_buf, 0, idx + 1));
+//        return new Token(STANDARD_KEYWORD, new String(__static_keyword_buf, 0, idx + 1), h >> 1);
+        return new Token(STANDARD_KEYWORD, h >> 1);
     }
 
     /**

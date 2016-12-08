@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcConstructionMaterialResource extends IfcConstructionResource implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcGloballyUniqueId","IfcOwnerHistory","IfcLabel","IfcText","IfcLabel","IfcIdentifier","IfcLabel","IfcResourceConsumptionEnum","IfcMeasureWithUnit","SET<IfcActorSelect>","IfcRatioMeasure"};
+private static final int[] nonInverseHashAttributes = new int[]{12553,43192,3773,47402,3773,44139,3773,37677,8704,1073770681,43208};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

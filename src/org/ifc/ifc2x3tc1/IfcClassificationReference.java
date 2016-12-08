@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcClassificationReference extends IfcExternalReference implements ClassInterface, IfcClassificationNotationSelect
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcLabel","IfcIdentifier","IfcLabel","IfcClassification"};
+private static final int[] nonInverseHashAttributes = new int[]{3773,44139,3773,13692};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;

@@ -17,6 +17,7 @@ import org.ifc.step.parser.ObjectChangeListener;
 public class IfcCurrencyRelationship extends InternalAccessClass implements ClassInterface
 {
 	private static final String[] nonInverseAttributes = new String[]{"IfcMonetaryUnit","IfcMonetaryUnit","IfcPositiveRatioMeasure","IfcDateAndTime","IfcLibraryInformation"};
+private static final int[] nonInverseHashAttributes = new int[]{43275,43275,12756,30007,49015};int[] getNonInverseHashAttributeTypes(){return nonInverseHashAttributes;}
 	private java.util.ArrayList<CloneableObject> stepParameter = null;
 	private java.util.HashSet<ObjectChangeListener> listenerList = null;
 	protected int stepLineNumber;
