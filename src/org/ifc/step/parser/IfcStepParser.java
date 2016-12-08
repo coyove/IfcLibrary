@@ -221,7 +221,7 @@ public class IfcStepParser {
             } else if (object instanceof DOUBLE) {
                 DOUBLE doubleObject = (DOUBLE) object;
                 try {
-                    DOUBLE integerParameter = (DOUBLE) ObjectFactory.createInstance(type);
+                    DOUBLE integerParameter = (DOUBLE) ObjectFactoryMap.createInstance(type);
                     integerParameter.setValue(doubleObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -231,7 +231,7 @@ public class IfcStepParser {
             } else if (object instanceof STRING) {
                 STRING stringObject = (STRING) object;
                 try {
-                    STRING stringParameter = (STRING) ObjectFactory.createInstance(type);
+                    STRING stringParameter = (STRING) ObjectFactoryMap.createInstance(type);
                     stringParameter.setValue(stringObject);
                     parameters.set(i, stringParameter);
                 } catch (Exception e) {
@@ -253,7 +253,7 @@ public class IfcStepParser {
             } else if (object instanceof INTEGER) {
                 INTEGER integerObject = (INTEGER) object;
                 try {
-                    INTEGER integerParameter = (INTEGER) ObjectFactory.createInstance(type);
+                    INTEGER integerParameter = (INTEGER) ObjectFactoryMap.createInstance(type);
                     integerParameter.setValue(integerObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -263,7 +263,7 @@ public class IfcStepParser {
             } else if (object instanceof ENUM) {
                 ENUM enumObject = (ENUM) object;
                 try {
-                    CloneableObject enumParameter = (ENUM) ObjectFactory.createInstance(type);
+                    CloneableObject enumParameter = (ENUM) ObjectFactoryMap.createInstance(type);
                     ((ENUM) enumParameter).setValue(enumObject.stringValue);
                     parameters.set(i, enumParameter);
                 } catch (Exception e) {
@@ -273,7 +273,7 @@ public class IfcStepParser {
             } else if (object instanceof BINARY) {
                 BINARY byteObject = (BINARY) object;
                 try {
-                    BINARY byteParameter = (BINARY) ObjectFactory.createInstance(type);
+                    BINARY byteParameter = (BINARY) ObjectFactoryMap.createInstance(type);
                     byteParameter.setValue(byteObject.value);
                     parameters.set(i, byteParameter);
                 } catch (Exception e) {
@@ -284,7 +284,7 @@ public class IfcStepParser {
                 NodeObject inlineObject = (NodeObject) object;
                 try {
                     String className = inlineObject.getClassName();
-                    CloneableObject inlineParameter = (CloneableObject) ObjectFactory.createInstance(className);
+                    CloneableObject inlineParameter = (CloneableObject) ObjectFactoryMap.createInstance(className);
 
                     if (inlineParameter instanceof InternalAccessClass) {
                         resolveCollections(inlineObject, className);
@@ -303,7 +303,7 @@ public class IfcStepParser {
             } else if (object instanceof LOGICAL) {
                 LOGICAL logicalObject = (LOGICAL) object;
                 try {
-                    Object classObject = ObjectFactory.createInstance(type);
+                    Object classObject = ObjectFactoryMap.createInstance(type);
                     if (BOOLEAN.class.isAssignableFrom(classObject.getClass())) {
                         BOOLEAN booleanParameter = (BOOLEAN) classObject;
                         booleanParameter.setValue(logicalObject.value);
@@ -335,7 +335,7 @@ public class IfcStepParser {
                 String[] parameterList = null;
                 try {
                     parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    DOUBLE doubleParameter = (DOUBLE) ObjectFactory.createInstance(parameterList[i].toUpperCase());
+                    DOUBLE doubleParameter = (DOUBLE) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
                     doubleParameter.setValue(doubleObject.value);
                     parameters.set(i, doubleParameter);
                 } catch (Exception e) {
@@ -352,7 +352,7 @@ public class IfcStepParser {
                 String[] parameterList = null;
                 try {
                     parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    STRING stringParameter = (STRING) ObjectFactory.createInstance(parameterList[i].toUpperCase());
+                    STRING stringParameter = (STRING) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
                     stringParameter.setValue(stringObject);
                     parameters.set(i, stringParameter);
                 } catch (Exception e) {
@@ -398,7 +398,7 @@ public class IfcStepParser {
                         dummyObject.setParameter(listObject);
                         dummyObject.setClassName(nextType);
                         resolveCollections(dummyObject, nextType);
-                        TypeInterface TypeInterface = (TypeInterface) ObjectFactory.createInstance(className.toUpperCase());
+                        TypeInterface TypeInterface = (TypeInterface) ObjectFactoryMap.createInstance(className.toUpperCase());
                         TypeInterface.setValue(dummyObject.getParameter());
                         parameters.set(i, TypeInterface);
                     }
@@ -414,7 +414,7 @@ public class IfcStepParser {
                 String[] parameterList = null;
                 try {
                     parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    CloneableObject enumParameter = (ENUM) ObjectFactory.createInstance(parameterList[i].toUpperCase());
+                    CloneableObject enumParameter = (ENUM) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
                     ((ENUM) enumParameter).setValue(enumObject.stringValue);
                     parameters.set(i, enumParameter);
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -441,7 +441,7 @@ public class IfcStepParser {
                 String[] parameterList = null;
                 try {
                     parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    INTEGER integerParameter = (INTEGER) ObjectFactory.createInstance(parameterList[i].toUpperCase());
+                    INTEGER integerParameter = (INTEGER) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
                     integerParameter.setValue(integerObject.value);
                     parameters.set(i, integerParameter);
                 } catch (Exception e) {
@@ -459,7 +459,7 @@ public class IfcStepParser {
                 String[] parameterList = null;
                 try {
                     parameterList = InternalAccess.getNonInverseAttributeTypes(ClassInterfaceObject);
-                    BINARY byteParameter = (BINARY) ObjectFactory.createInstance(parameterList[i].toUpperCase());
+                    BINARY byteParameter = (BINARY) ObjectFactoryMap.createInstance(parameterList[i].toUpperCase());
                     byteParameter.setValue(byteObject.value);
                     parameters.set(i, byteParameter);
                 } catch (Exception e) {
@@ -475,7 +475,7 @@ public class IfcStepParser {
                 NodeObject inlineObject = (NodeObject) object;
                 try {
                     String className = inlineObject.getClassName();
-                    CloneableObject inlineParameter = (CloneableObject) ObjectFactory.createInstance(className);
+                    CloneableObject inlineParameter = (CloneableObject) ObjectFactoryMap.createInstance(className);
 
                     if (inlineParameter instanceof InternalAccessClass) {
                         resolveCollections(inlineObject, className);

@@ -1,10 +1,13 @@
 package org.ifc.test;
 
 import org.ifc.ifcmodel.IfcModel;
+import org.ifc.step.parser.FactorySwitchGenerator;
+import org.ifc.step.parser.ObjectFactoryMap;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 
 import java.io.FileInputStream;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -44,6 +47,16 @@ public class main {
         }
     }
 
+    private static int hash(String str, int a, int b) {
+        int h = 0;
+
+        for (int i = 0; i < str.length(); i++) {
+            h = (h + str.charAt(i) * 23) ^ 3154;
+        }
+
+        return h >> 1;
+    }
+
     public static void main(String[] args) throws Exception {
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
@@ -54,12 +67,29 @@ public class main {
 //            b = a.hashCode();
 //        }
 //        System.out.println(System.currentTimeMillis() - start);
-
-        if (1 == 1) {
-            return;
+//        FactorySwitchGenerator.generate();
+//        for (int i = 0; i < 100000; i++) {
+//            for (int j = 0; j < 128; j++) {
+        TreeMap<Integer, String> map = new TreeMap<Integer, String>();
+        int d = 0;
+        for (Map.Entry<String, ObjectFactoryMap.ClassBuilder> c : ObjectFactoryMap.FACTORY_MAP.entrySet()) {
+            int k = hash(c.getKey(), 0, 0);
+            if (map.containsKey(k)) {
+                System.out.println(k + " dup " + c.getKey());
+            } else {
+                map.put(k, c.getKey());
+            }
         }
 
-        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
+//        if (d == 0) {
+
+            for (Map.Entry<Integer, String> e : map.entrySet()) {
+                System.out.println(e.getKey() + " " + e.getValue());
+            }
+
+
+
+        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\WWY.ifc"));
         System.out.println(model.getIfcObjects().size());
         System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);

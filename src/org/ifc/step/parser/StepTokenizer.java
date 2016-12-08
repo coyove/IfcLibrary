@@ -82,7 +82,7 @@ public class StepTokenizer {
         stepCounter++;
         InternalAccessClass object = null;
         try {
-            object = (InternalAccessClass) ObjectFactory.createInstance(node1.getClassName());
+            object = (InternalAccessClass) ObjectFactoryMap.createInstance(node1.getClassName());
             InternalAccess.setStepParameter(object, node1.getParameter());
             InternalAccess.setStepLineNumber(object, node1.getLineNumber());
             nodeMap.put(node1.getLineNumber(), object);
@@ -139,7 +139,7 @@ public class StepTokenizer {
         node.setClassName(StepTokenizer.getNextToken().image);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Description = (File_Description) ObjectFactory.createInstance(node.getClassName());
+        file_Description = (File_Description) ObjectFactoryMap.createInstance(node.getClassName());
         InternalAccess.setStepParameter(file_Description, node.getParameter());
         node.reset();
 
@@ -147,7 +147,7 @@ public class StepTokenizer {
         node.setClassName(StepTokenizer.getNextToken().image);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Name = (File_Name) ObjectFactory.createInstance(node.getClassName());
+        file_Name = (File_Name) ObjectFactoryMap.createInstance(node.getClassName());
         InternalAccess.setStepParameter(file_Name, node.getParameter());
         node.reset();
 
@@ -155,7 +155,7 @@ public class StepTokenizer {
         node.setClassName(StepTokenizer.getNextToken().image);
         StepTokenizer.getNextToken(); // "("
         parseParameters(t);
-        file_Schema = (File_Schema) ObjectFactory.createInstance(node.getClassName());
+        file_Schema = (File_Schema) ObjectFactoryMap.createInstance(node.getClassName());
         InternalAccess.setStepParameter(file_Schema, node.getParameter());
         LIST<STRING> fileSchemes = (LIST<STRING>) InternalAccess.getStepParameter(file_Schema).get(0);
         String fileSchema = fileSchemes.get(0).getDecodedValue();
