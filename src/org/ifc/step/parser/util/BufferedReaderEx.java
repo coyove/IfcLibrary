@@ -9,7 +9,7 @@ import java.io.Reader;
  */
 public class BufferedReaderEx extends BufferedReader {
     // It's hard to overflow, maybe...
-    private long cachedRead = -2;
+    private int cachedRead = -2;
 
     private int curLine = 0;
 
@@ -24,7 +24,7 @@ public class BufferedReaderEx extends BufferedReader {
     @Override
     public int read() {
         if (cachedRead != -2) {
-            int tmp = (int) cachedRead;
+            int tmp = cachedRead;
             cachedRead = -2;
             if (tmp == '\n') {
                 curLine++;
@@ -48,7 +48,7 @@ public class BufferedReaderEx extends BufferedReader {
     public int next() {
         try {
             cachedRead = super.read();
-            return (int) cachedRead;
+            return cachedRead;
         } catch (IOException e) {
             cachedRead = -1;
             return -1;

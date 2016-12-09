@@ -531,58 +531,122 @@ public class StepTokenizer {
 //        } while (nextChar == ' ' || nextChar == '\r' || nextChar == '\n' || nextChar == '\t');
         parse:
         while (true) {
-            switch (nextChar = __input_stream.read()) {
-                case ' ':
-                case '\r':
-                case '\n':
-                case '\t':
+//            switch (nextChar = __input_stream.read()) {
+//                case ' ': // 32
+//                    break;
+//                case -1:
+//                    return new Token(EOF);
+//                default:
+//                    switch (nextChar) {
+//                        case '\r': // 13
+//                        case 12:
+//                        case 11:
+//                        case '\n': // 10
+//                        case '\t': // 9
+//                            break;
+//                        default:
+//                            break parse;
+//                    }
+//            }
+            switch ((nextChar = __input_stream.read()) >> 1) {
+                case 16: // space
                     break;
+                case 6: // '/n'
+                case 5: // '/r'
+                case 4: // '/t'
+                    break;
+                case 3:
+                case 2:
+                case 1:
+                case 0:
+                    // Shouldn't happen
+                case -1:
+                    return new Token(EOF);
                 default:
                     break parse;
             }
         }
 
         switch (nextChar) {
-            case ',':
-                return Token.CommaToken;
-            case '(':
-                return Token.LParenToken;
-            case ')':
-                return Token.RParenToken;
-            case '*':
-                return Token.StarToken;
-            case '$':
-                return Token.DollarToken;
-            case '\'':
-                return readString();
-            case '.':
-                return readEnum();
-            case '#':
-                return readName();
-            case '"':
+            case '"': // 34
                 System.out.println("BINARY is not implemented because IFC seems not to need them");
                 System.exit(0);
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case '-':
-                return readNumber((char) nextChar);
-            case -1:
-                return new Token(EOF);
-            case '/':
+            case '#': // 35
+                return readName();
+            case '$': // 36
+                return Token.DollarToken;
+            case 37:
+                return getNextToken(); // Shouldn't happen
+            case 38:
+                return getNextToken(); // Shouldn't happen
+            case '\'': // 39
+                return readString();
+            case '(': // 40
+                return Token.LParenToken;
+            case ')': // 41
+                return Token.RParenToken;
+            case '*': // 42
+                return Token.StarToken;
+            case 43:
+                return getNextToken(); // Shouldn't happen
+            case ',': // 44
+                return Token.CommaToken; // 45 is '-'
+            case '.': // 46
+                return readEnum();
+            case '/': // 47
                 skipComment();
                 return getNextToken();
-            case '=':
-                return Token.NullToken;
-            case ';':
+            case '0': // 48
+            case '1': // 49
+            case '2': // 50
+            case '3': // 51
+            case '4': // 52
+            case '5': // 53
+            case '6': // 54
+            case '7': // 55
+            case '8': // 56
+            case '9': // 57
+            case '-': // 45
+                return readNumber((char) nextChar);
+            case 58:
+                return getNextToken(); // Shouldn't happen
+            case ';': // 59
                 return Token.SemiColonToken;
+            case 60:
+                return getNextToken(); // Shouldn't happen
+            case '=': // 61
+                return Token.NullToken;
+            case 62:
+            case 63:
+            case 64:
+                return getNextToken(); // Shouldn't happen
+            case 65:
+            case 66:
+            case 67:
+            case 68:
+            case 69:
+            case 70:
+            case 71:
+            case 72:
+            case 73:
+            case 74:
+            case 75:
+            case 76:
+            case 77:
+            case 78:
+            case 79:
+            case 80:
+            case 81:
+            case 82:
+            case 83:
+            case 84:
+            case 85:
+            case 86:
+            case 87:
+            case 88:
+            case 89:
+            case 90:
+                return readKeyword((char) nextChar);
             default:
                 if (nextChar >= 'A' && nextChar <= 'Z') {
                     return readKeyword((char) nextChar);
