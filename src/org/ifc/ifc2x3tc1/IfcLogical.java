@@ -13,6 +13,10 @@ package org.ifc.ifc2x3tc1;
  */
 public class IfcLogical extends LOGICAL implements TypeInterface, IfcSimpleValue
 {
+	public final static IfcLogical IfcLogicalTrue = new IfcLogical(true);
+	public final static IfcLogical IfcLogicalFalse = new IfcLogical(false);
+	public final static IfcLogical IfcLogicalNull = new IfcLogical(null);
+
 	/**
  * The default constructor for the type object IfcLogical.
 **/
@@ -22,10 +26,10 @@ public class IfcLogical extends LOGICAL implements TypeInterface, IfcSimpleValue
  * Constructs a new IfcLogical type object using the given parameter.
 	 * @param value the value
 	**/
-	public IfcLogical(LOGICAL value)
-	{
-		this.setValue(value);
-	}
+//	public IfcLogical(LOGICAL value)
+//	{
+//		this.setValue(value);
+//	}
 	public IfcLogical(Boolean value)
 	{
 		this.setValue(value);

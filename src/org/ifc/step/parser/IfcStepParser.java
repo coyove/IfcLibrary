@@ -17,7 +17,7 @@ import org.ifc.step.parser.util.*;
  * or contact us directly: <a href='mailto:info@ifctoolsproject.com'>info@ifctoolsproject.com</a><br>
  */
 public class IfcStepParser {
-    private static final String PACKAGE_NAME = "org.ifc.ifc2x3tc1.";
+    public static final String PACKAGE_NAME = "org.ifc.ifc2x3tc1.";
 
     //private static final long serialVersionUID = 1L;
 
@@ -124,7 +124,7 @@ public class IfcStepParser {
     public void readStepFile(BufferedReader br) throws Exception {
         initReadStepFile();
         entityInstanceNameMap = StepTokenizer.startParsing(br);
-        finishReadStepFile();
+//        finishReadStepFile();
     }
 
     class InitNodeWorker implements Runnable {
@@ -210,7 +210,7 @@ public class IfcStepParser {
         System.gc();
     }
 
-    private static Object resolveCollections(NodeObject nodeObject, String type) {
+    public static Object resolveCollections(NodeObject nodeObject, String type) {
         type = type.toUpperCase();
         ArrayList<CloneableObject> parameters = nodeObject.getParameter();
         for (int i = 0; i < parameters.size(); i++) {
@@ -325,7 +325,7 @@ public class IfcStepParser {
         return nodeObject;
     }
 
-    private static Object resolveCollections(NodeObject nodeObject, int hash) {
+    public static Object resolveCollections(NodeObject nodeObject, int hash) {
 
         ArrayList<CloneableObject> parameters = nodeObject.getParameter();
         for (int i = 0; i < parameters.size(); i++) {

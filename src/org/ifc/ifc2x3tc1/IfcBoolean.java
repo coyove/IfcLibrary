@@ -13,6 +13,8 @@ package org.ifc.ifc2x3tc1;
  */
 public class IfcBoolean extends BOOLEAN implements TypeInterface, IfcSimpleValue
 {
+	public final static IfcBoolean IfcBooleanTrue = new IfcBoolean(true);
+    public final static IfcBoolean IfcBooleanFalse = new IfcBoolean(false);
 	/**
  * The default constructor for the type object IfcBoolean.
 **/

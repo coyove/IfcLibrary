@@ -44,6 +44,74 @@ public class FactorySwitchGenerator {
         }
     }
 
+    public static void generate4() throws Exception {
+        Pattern reg = Pattern.compile("nonInverseAttributes\\s=\\snew\\sString\\[\\]\\{\\S*\\}");
+
+        for (File file : new File("./src/org/ifc/ifc2x3tc1").listFiles()) {
+            if (file.isFile()) {
+                Path p = Paths.get("./src/org/ifc/ifc2x3tc1/" + file.getName());
+                String classname = file.getName().substring(0, file.getName().length() - 5);
+
+                List<String> lines = Files.readAllLines(p);
+                String[] names = new String[]{};
+                int originalLine = -1;
+
+                for (int i1 = 0; i1 < lines.size(); i1++) {
+                    Matcher m = reg.matcher(lines.get(i1));
+                    if (m.find()) {
+                        String tmp = m.group();
+                        names = tmp.substring(tmp.indexOf('{') + 1, tmp.lastIndexOf('}')).split(",");
+                        for (int i2 = 0; i2 < names.length; i2++) {
+                            names[i2] = names[i2].replace("\"", "");
+                        }
+                    }
+
+                    if (lines.get(i1).contains("public interface ")) {
+                        originalLine = 0;
+                    }
+                }
+
+                if (names.length == 1 && names[0].isEmpty()) {
+                    names = new String[0];
+                }
+
+                if (originalLine == -1) {
+                    int[] hashes = new int[names.length];
+                    for (int i = 0; i < names.length; i++) {
+                        String name = names[i].toUpperCase();
+                        if (name.contains("LIST<")) {
+                            name = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
+                            hashes[i] = ObjectFactory.hash(name) | ObjectFactory.LIST_TYPE;
+                        } else if (name.contains("SET<")) {
+                            name = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
+                            hashes[i] = ObjectFactory.hash(name) | ObjectFactory.SET_TYPE;
+                        } else {
+                            if (!classExists(name)) {
+                                hashes[i] = ObjectFactory.SKIP_TYPE;
+                            } else {
+                                hashes[i] = ObjectFactory.hash(name);
+                            }
+                        }
+                    }
+
+                    StringBuilder sb = new StringBuilder("LOOKUP_ARRAY[" +
+                            ObjectFactory.hash(classname) + "] = new int[]{");
+                    for (int i = 0; i < hashes.length; i++) {
+                        sb.append(hashes[i]);
+                        if (i < hashes.length - 1) {
+                            sb.append(",");
+                        }
+                    }
+
+                    sb.append("};");
+
+                    System.out.println(sb);
+                }
+//                }
+            }
+        }
+    }
+
     public static void generate3() throws Exception {
         Pattern reg = Pattern.compile("nonInverseAttributes\\s=\\snew\\sString\\[\\]\\{\\S*\\}");
         Pattern reg2 = Pattern.compile("nonInverseHashAttributes\\s=\\snew\\sint\\[\\]\\{\\S*\\}");

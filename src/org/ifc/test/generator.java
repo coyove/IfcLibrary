@@ -7,6 +7,6 @@ import org.ifc.step.parser.FactorySwitchGenerator;
  */
 public class generator {
     public static void main(String[] args) throws Exception {
-        FactorySwitchGenerator.generate3();
+        FactorySwitchGenerator.generate4();
     }
 }
