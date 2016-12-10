@@ -79,7 +79,7 @@ public class IfcStepParser {
      * Cleans up the memory.
      */
     public void destruct() {
-        StepTokenizer.destruct();
+        StaticStepParser.destruct();
         listenerList = null;
         entityInstanceNameMap = null;
         file_Description = null;
@@ -122,70 +122,29 @@ public class IfcStepParser {
      * @throws Exception exception is thrown if the file could not be read.
      */
     public void readStepFile(BufferedReader br) throws Exception {
-        initReadStepFile();
-        entityInstanceNameMap = StepTokenizer.startParsing(br);
-        finishReadStepFile();
-    }
-
-    class InitNodeWorker implements Runnable {
-        private int start;
-        private int end;
-
-        public InitNodeWorker(int start, int end) {
-            this.start = start;
-            this.end = (end == -1 ? entityInstanceNameMap.indexes().length : end);
-        }
-
-        public void run() {
-            int[] indexes = entityInstanceNameMap.indexes();
-
-            for (int i = start; i < end; i++) {
-                InternalAccessClass node = entityInstanceNameMap.get(indexes[i]);
-                if (node != null) {
-                    initNode(node);
-                    InternalAccess.setStepParameter(node, null);
-                }
+        StaticStepParser.addStepParserProgressListener(new StepParserProgressListener() {
+            public void progressActionPerformed(ProgressEvent event) {
+                fireProgressEvent(event);
             }
-        }
-    }
-
-    private void initReadStepFile() {
-        StepTokenizer
-                .addStepParserProgressListener(new StepParserProgressListener() {
-                    public void progressActionPerformed(ProgressEvent event) {
-                        fireProgressEvent(event);
-                    }
-                });
+        });
+        entityInstanceNameMap = StaticStepParser.startParsing(br);
+        finishReadStepFile();
     }
 
     private void finishReadStepFile() {
         //HEADER
-        file_Description = StepTokenizer.getFile_Description();
-        file_Name = StepTokenizer.getFile_Name();
-        file_Schema = StepTokenizer.getFile_Schema();
+        file_Description = StaticStepParser.getFile_Description();
+        file_Name = StaticStepParser.getFile_Name();
+        file_Schema = StaticStepParser.getFile_Schema();
 
-        StepTokenizer.destruct();
-//        System.runFinalization();
+        StaticStepParser.destruct();
 
         fireProgressEvent(new ProgressEvent(0, "initialize objects..."));
         int counter = 0;
         int progress = 0;
         int progressStep = entityInstanceNameMap.size() / 100;
 
-//        for (int idx : entityInstanceNameMap.indexes()) {
-//            InternalAccessClass node = entityInstanceNameMap.get(idx);
-//            if (node != null) {
-//                initNode(node);
-////                InternalAccess.setStepParameter(node, null);
-//                counter++;
-//                if (counter >= progressStep) {
-//                    fireProgressEvent(new ProgressEvent(++progress,
-//                            "initialize objects..."));
-//                    counter = 0;
-//                }
-//            }
-//        }
-        for (StepTokenizer.MissingReference mr : StepTokenizer.missingReferences) {
+        for (StaticStepParser.MissingReference mr : StaticStepParser.missingReferences) {
             Object object = mr.key;
             InternalAccessClass iac = entityInstanceNameMap.get(mr.instanceIdx);
 
@@ -196,6 +155,11 @@ public class IfcStepParser {
                         InternalAccess.getStepParameter(((InternalAccessClass) object));
                 params.set(mr.idx, iac);
             }
+        }
+
+        for (InternalAccessClass cls : StaticStepParser.backwardDefinedClass) {
+            InternalAccess.initialize(cls, InternalAccess.getStepParameter(cls));
+            InternalAccess.setStepParameter(cls, null);
         }
 
         fireProgressEvent(new ProgressEvent(0, " "));

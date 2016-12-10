@@ -5,6 +5,7 @@ import org.ifc.step.parser.FactorySwitchGenerator;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -50,12 +51,14 @@ public class main {
 
 //        Thread.sleep(5000);
 
-        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
         System.out.println(model.getIfcObjects().size());
 //        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
         System.out.println(model.getIfcObjectByEntityInstanceName(41).getStepLine());
         System.out.println(model.getIfcObjectByEntityInstanceName(11885).getStepLine());
+
+        model.writeStepfile(new FileOutputStream("main.ifc"));
     }
 }

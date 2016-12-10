@@ -44,7 +44,7 @@ import org.ifc.ifc2x3tc1.SET;
 import org.ifc.ifc2x3tc1.STRING;
 import org.ifc.ifc2x3tc1.TimeStampText;
 import org.ifc.step.parser.IfcStepParser;
-import org.ifc.step.parser.StepTokenizer;
+import org.ifc.step.parser.StaticStepParser;
 import org.ifc.step.parser.util.ProgressEvent;
 import org.ifc.step.parser.util.StepParserProgressListener;
 
@@ -76,7 +76,6 @@ public class IfcModel {
     private HashSet<StepParserProgressListener> progressListeners = null;
     private HashSet<IfcModelListener> listenerList = null;
     private SoftReference<HashMap<Class<?>, HashSet<Object>>> typeCache = null;
-    // private TreeMap<Integer, ClassInterface> entityInstanceNameMap = null;
     private TreeMap<Integer, ClassInterface> entityInstanceNameMap = null;
     private boolean isTypeCacheEnabled = false;
     private File_Name file_Name = null;
@@ -592,7 +591,7 @@ public class IfcModel {
         parser.removeAllStepParserPogressListeners();
         parser.destruct();
         parser = null;
-        StepTokenizer.removeAllStepParserPogressListeners();
+        StaticStepParser.removeAllStepParserPogressListeners();
         fireProgressEvent(new ProgressEvent(0, " "));
         fireModelEvent(new IfcModelEvent(IfcModelEvent.MODEL_FUNDAMENTAL_CHANGE));
     }

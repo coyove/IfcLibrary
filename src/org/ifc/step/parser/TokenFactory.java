@@ -1,15 +1,13 @@
 package org.ifc.step.parser;
 
-import org.ifc.ifc2x3tc1.*;
-
 public class TokenFactory {
     public final static Token NullToken = new Token();
-    public final static Token SemiColonToken = new Token(StepTokenizer.SEMICOLON, ";");
-    public final static Token CommaToken = new Token(StepTokenizer.COMMA, ",");
-    public final static Token LParenToken = new Token(StepTokenizer.LPAREN, "(");
-    public final static Token RParenToken = new Token(StepTokenizer.RPAREN, ")");
-    public final static Token StarToken = new Token(StepTokenizer.STAR, "*");
-    public final static Token DollarToken = new Token(StepTokenizer.DOLLAR, "$");
+    public final static Token SemiColonToken = new Token(StaticStepParser.SEMICOLON, ";");
+    public final static Token CommaToken = new Token(StaticStepParser.COMMA, ",");
+    public final static Token LParenToken = new Token(StaticStepParser.LPAREN, "(");
+    public final static Token RParenToken = new Token(StaticStepParser.RPAREN, ")");
+    public final static Token StarToken = new Token(StaticStepParser.STAR, "*");
+    public final static Token DollarToken = new Token(StaticStepParser.DOLLAR, "$");
 
     private static final long serialVersionUID = 1L;
 
