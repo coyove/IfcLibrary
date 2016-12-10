@@ -124,7 +124,7 @@ public class IfcStepParser {
     public void readStepFile(BufferedReader br) throws Exception {
         initReadStepFile();
         entityInstanceNameMap = StepTokenizer.startParsing(br);
-//        finishReadStepFile();
+        finishReadStepFile();
     }
 
     class InitNodeWorker implements Runnable {
@@ -439,6 +439,46 @@ public class IfcStepParser {
     }
 
     private static Object initNode(InternalAccessClass ClassInterfaceObject) {
+        ArrayList<CloneableObject> parameters = InternalAccess.getStepParameter(ClassInterfaceObject);
+        for (int i = 0; i < parameters.size(); i++) {
+            Object object = parameters.get(i);
+            if (object instanceof InstanceLineNoRef) {
+                parameters.set(i, entityInstanceNameMap.get(((InstanceLineNoRef) object).getLineNr()));
+            } else if (object instanceof InternalAccessClass) {
+                initNode(((InternalAccessClass) object));
+            } else if (object instanceof LIST) {
+                LIST listObj = ((LIST) object);
+                for (int i1 = 0; i1 < listObj.size(); i1++) {
+                    if (listObj.get(i1) instanceof InstanceLineNoRef) {
+                        listObj.set(i1, entityInstanceNameMap.get(
+                                ((InstanceLineNoRef) listObj.get(i1)).getLineNr()));
+                    }
+                }
+            } else if (object instanceof SET) {
+                SET setObj = ((SET) object);
+                SET newSet = new SET(setObj.size());
+                boolean flag = false;
+
+                for (Object o : setObj) {
+                    if (o instanceof InstanceLineNoRef) {
+                        flag = true;
+                        newSet.add(entityInstanceNameMap.get(((InstanceLineNoRef) o).getLineNr()));
+                    } else {
+                        newSet.add(o);
+                    }
+                }
+
+                if (flag) {
+                    parameters.set(i, newSet);
+                }
+            }
+        }
+
+        InternalAccess.initialize(ClassInterfaceObject, parameters);
+        return null;
+    }
+
+    private static Object initNode2(InternalAccessClass ClassInterfaceObject) {
         ArrayList<CloneableObject> parameters = InternalAccess.getStepParameter(ClassInterfaceObject);
         for (int i = 0; i < parameters.size(); i++) {
             Object object = parameters.get(i);

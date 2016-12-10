@@ -24,6 +24,11 @@ public class SET<E extends CloneableObject> extends HashSet<E> implements RootIn
 		super();
 	}
 
+	public SET(int cap)
+	{
+		super(cap);
+	}
+
 	/**
 	 * Constructs a new SET object using the given value.
 	 * @param arrayList

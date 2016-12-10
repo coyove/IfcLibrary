@@ -48,9 +48,9 @@ public class main {
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
 
-        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
         System.out.println(model.getIfcObjects().size());
-        System.out.println(model.getFile_Schema().getStepLine());
+//        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
 //        System.out.println(model.getIfcObjectByEntityInstanceName(91).getStepLine());

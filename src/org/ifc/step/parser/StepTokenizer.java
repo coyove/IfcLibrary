@@ -141,16 +141,17 @@ public class StepTokenizer {
         file_Description = (File_Description) ObjectFactory.createInstance(node.getClassHash());
         parseParameters(t, file_Description);
 
-        InternalAccess.setStepParameter(file_Description, node.getParameter());
+//        InternalAccess.setStepParameter(file_Description, node.getParameter());
         node.reset();
 
         node.reset();
-        node.setClassHash(StepTokenizer.getNextToken().intImage);
+        Token tok = StepTokenizer.getNextToken();
+        node.setClassHash(tok.intImage);
         StepTokenizer.getNextToken(); // "("
         file_Name = (File_Name) ObjectFactory.createInstance(node.getClassHash());
         parseParameters(t, file_Name);
 
-        InternalAccess.setStepParameter(file_Name, node.getParameter());
+//        InternalAccess.setStepParameter(file_Name, node.getParameter());
         node.reset();
 
         node.reset();
@@ -159,7 +160,7 @@ public class StepTokenizer {
         file_Schema = (File_Schema) ObjectFactory.createInstance(node.getClassHash());
         parseParameters(t, file_Schema);
 
-        InternalAccess.setStepParameter(file_Schema, node.getParameter());
+//        InternalAccess.setStepParameter(file_Schema, node.getParameter());
         LIST<STRING> fileSchemes = (LIST<STRING>) InternalAccess.getStepParameter(file_Schema).get(0);
         String fileSchema = fileSchemes.get(0).getDecodedValue();
         if (!fileSchema.startsWith("IFC2X3")) {
@@ -195,7 +196,7 @@ public class StepTokenizer {
                     break;
                 }
                 default: {
-                    list.add(getType(t, hash));
+                    list.add(getType(t, null, ObjectFactory.SKIP_TYPE, 0));
                     break;
                 }
             }
@@ -204,171 +205,30 @@ public class StepTokenizer {
         return list;
     }
 
-    private static ArrayList<CloneableObject> parseParameters(Token t, InternalAccessClass cls) {
-        boolean entityEnd = false;
+    private static void parseParameters(Token t, InternalAccessClass cls) {
         ArrayList<CloneableObject> ret = new ArrayList<CloneableObject>(16);
         int[] hashList = InternalAccess.getNonInverseHashAttributeTypes(cls);
         int paramIdx = 0;
 
-        while (!entityEnd) {
+        finish:
+        while (true) {
             t = StepTokenizer.getNextToken();
             switch (t.kind) {
-                case ENTITY_INSTANCE_NAME: {
-                    ret.add(new InstanceLineNoRef(t.intImage));
+                case SEMICOLON:
+                    // End
+                    break finish;
+                case RPAREN:
+                case COMMA:
                     break;
-                }
-                case STANDARD_KEYWORD: {
-                    InternalAccessClass iac = (InternalAccessClass) ObjectFactory.createInstance(t.intImage);
-                    ArrayList<CloneableObject> parameters = new ArrayList<CloneableObject>(16);
-
-                    boolean inlineEnd = false;
-                    int i = 0;
-                    while (!inlineEnd) {
-                        t = StepTokenizer.getNextToken();
-                        switch (t.kind) {
-                            case COMMA:
-                                break;
-                            case RPAREN: {
-                                inlineEnd = true;
-                                break;
-                            }
-                            case LPAREN:
-                                break;
-                            default: {
-                                parameters.add(getType(t, iac, i++));
-                                break;
-                            }
-                        }
-                    }
-
-                    InternalAccess.initialize(iac, parameters);
-                    ret.add(iac);
-                    break;
-                }
-                case DOLLAR: {
-                    node.addParameter(null);
-                    break;
-                }
-                case STAR: {
-                    node.addParameter(null);
-                    break;
-                }
-                case LPAREN: {
-                    int hash = hashList[paramIdx];
-
-                    if ((hash & ObjectFactory.SET_TYPE) == ObjectFactory.SET_TYPE) {
-                        ret.add(new SET<CloneableObject>(getList(t, hash & ~ObjectFactory.SET_TYPE)));
-                    } else if ((hash & ObjectFactory.LIST_TYPE) == ObjectFactory.LIST_TYPE) {
-                        ret.add(new LIST<CloneableObject>(getList(t, hash & ~ObjectFactory.LIST_TYPE)));
-                    } else {
-                        String className = InternalAccess.getNonInverseAttributeTypes(cls)[paramIdx];
-                        TypeInterface ti = (TypeInterface) ObjectFactory.createInstance(className);
-                        ti.setValue(getList(t, getSuperClassListElemTypeHash(className)));
-
-                        ret.add(ti);
-                    }
-                    break;
-                }
-                case SEMICOLON: {
-                    entityEnd = true;
-                    break;
-                }
-                case REAL: {
-                    if (paramIdx >= hashList.length) {
-                        ret.add(new DOUBLE(t.doubleImage));
-                    } else {
-                        DOUBLE d = (DOUBLE) ObjectFactory.createInstance(hashList[paramIdx]);
-                        d.setValue(t.doubleImage);
-                        ret.add(d);
-                    }
-                    break;
-                }
-                case STRING: {
-                    if (paramIdx >= hashList.length) {
-                        ret.add(new STRING(t.image, false));
-                    } else {
-                        STRING s = (STRING) ObjectFactory.createInstance(hashList[paramIdx]);
-                        s.setValue(new STRING(t.image, false));
-                        ret.add(s);
-                    }
-                    break;
-                }
-                case BINARY: {
-                    // node.addParameter(new BINARY(t.image.substring(1, t.image.length() - 1)));
-                    System.exit(0);
-                    break;
-                }
-                case INTEGER: {
-                    if (paramIdx >= hashList.length) {
-                        ret.add(new INTEGER(t.intImage));
-                    } else {
-                        INTEGER i = (INTEGER) ObjectFactory.createInstance(hashList[paramIdx]);
-                        i.setValue(t.intImage);
-                        ret.add(i);
-                    }
-                    break;
-                }
-                case ENUMERATION: {
-                    if (paramIdx >= hashList.length) {
-                        if (t.image.equals("T")) {
-                            ret.add(LOGICAL.LogicalTrue);
-                        } else if (t.image.equals("F")) {
-                            ret.add(LOGICAL.LogicalFalse);
-                        } else if (t.image.equals("U")) {
-                            ret.add(IfcLogical.IfcLogicalNull);
-                        } else {
-                            ret.add(new ENUM(t.image));
-                        }
-                    } else {
-                        int classHash = hashList[paramIdx];
-                        if (t.image.equals("T")) {
-                            if (classHash == 47202 + 59) {
-                                ret.add(BOOLEAN.BooleanTrue);
-                            } else if (classHash == 4564 + 59) {
-                                ret.add(IfcBoolean.IfcBooleanTrue);
-                            } else if (classHash == 47225 + 59) {
-                                ret.add(LOGICAL.LogicalTrue);
-                            } else if (classHash == 28779 + 59) {
-                                ret.add(IfcLogical.IfcLogicalTrue);
-                            } else {
-                                System.out.println("Unknown True");
-                            }
-                        } else if (t.image.equals("F")) {
-                            if (classHash == 47202 + 59) {
-                                ret.add(BOOLEAN.BooleanFalse);
-                            } else if (classHash == 4564 + 59) {
-                                ret.add(IfcBoolean.IfcBooleanFalse);
-                            } else if (classHash == 47225 + 59) {
-                                ret.add(LOGICAL.LogicalFalse);
-                            } else if (classHash == 28779 + 59) {
-                                ret.add(IfcLogical.IfcLogicalFalse);
-                            } else {
-                                System.out.println("Unknown False");
-                            }
-                        } else if (t.image.equals("U")) {
-                            if (classHash == 47225 + 59) {
-                                ret.add(LOGICAL.LogicalNull);
-                            } else if (classHash == 28779 + 59) {
-                                ret.add(IfcLogical.IfcLogicalNull);
-                            } else {
-                                System.out.println("Unknown Null");
-                            }
-                        } else {
-                            ENUM enumParameter = (ENUM) ObjectFactory.createInstance(hashList[paramIdx]);
-                            enumParameter.setValue(t.image);
-                            ret.add(enumParameter);
-                        }
-                    }
-                    break;
-                }
                 default:
-                    break;
+                    int hash = paramIdx < hashList.length ? hashList[paramIdx] : ObjectFactory.SKIP_TYPE;
+                    ret.add(getType(t, cls, hash, paramIdx));
+                    paramIdx++;
             }
-
-            paramIdx++;
         }
 
-        return ret;
+        InternalAccess.setStepParameter(cls, ret);
+//        InternalAccess.initialize(cls, ret);
     }
 
     private static void parse(BufferedReaderEx br) throws Exception {
@@ -395,7 +255,7 @@ public class StepTokenizer {
 
                 InternalAccessClass object =
                         (InternalAccessClass) ObjectFactory.createInstance(node.getClassHash());
-                InternalAccess.setStepParameter(object, parseParameters(t, object));
+                parseParameters(t, object);
                 InternalAccess.setStepLineNumber(object, t.intImage);
                 nodeMap.put(t.intImage, object);
 
@@ -403,8 +263,8 @@ public class StepTokenizer {
         }
     }
 
-    private static CloneableObject getType(Token t, InternalAccessClass cls, int paramIdx) {
-        int[] hashList = InternalAccess.getNonInverseHashAttributeTypes(cls);
+    private static CloneableObject getType(Token t, InternalAccessClass cls, int classHash, int idx) {
+        boolean skip = classHash << 4 >> 4 != classHash;
         switch (t.kind) {
             case DOLLAR:
                 return null;
@@ -413,40 +273,53 @@ public class StepTokenizer {
             case ENTITY_INSTANCE_NAME:
                 return new InstanceLineNoRef(t.intImage);
             case STANDARD_KEYWORD: {
-                InternalAccessClass iac = (InternalAccessClass) ObjectFactory.createInstance(t.intImage);
-                ArrayList<CloneableObject> parameters = new ArrayList<CloneableObject>(16);
+                CloneableObject co = (CloneableObject) ObjectFactory.createInstance(t.intImage);
+                if (co instanceof InternalAccessClass) {
+                    InternalAccessClass iac = ((InternalAccessClass) co);
+                    ArrayList<CloneableObject> parameters = new ArrayList<CloneableObject>(16);
+                    int[] hashList = InternalAccess.getNonInverseHashAttributeTypes(iac);
 
-                StepTokenizer.getNextToken();
-                boolean inlineEnd = false;
-                int i = 0;
-                while (!inlineEnd) {
-                    t = StepTokenizer.getNextToken();
-                    switch (t.kind) {
-                        case COMMA:
-                            break;
-                        case RPAREN: {
-                            inlineEnd = true;
-                            break;
-                        }
-                        default: {
-                            parameters.add(getType(t, iac, i++));
-                            break;
+                    StepTokenizer.getNextToken();
+                    boolean inlineEnd = false;
+                    int i = 0;
+                    while (!inlineEnd) {
+                        t = StepTokenizer.getNextToken();
+                        switch (t.kind) {
+                            case COMMA:
+                                break;
+                            case RPAREN: {
+                                inlineEnd = true;
+                                break;
+                            }
+                            default: {
+                                parameters.add(getType(t, iac, hashList[i++], i));
+                                break;
+                            }
                         }
                     }
-                }
 
-                InternalAccess.initialize(iac, parameters);
-                return iac;
+                    InternalAccess.setStepParameter(iac, parameters);
+                    return iac;
+                } else {
+                    TypeInterface ti = ((TypeInterface) co);
+                    StepTokenizer.getNextToken(); // (
+                    ti.setValue(getType(StepTokenizer.getNextToken(), null, t.intImage, 0));
+                    StepTokenizer.getNextToken(); // )
+
+                    return co;
+                }
             }
             case LPAREN: {
-                int hash = hashList[paramIdx];
-
-                if ((hash & ObjectFactory.SET_TYPE) == ObjectFactory.SET_TYPE) {
-                    return new SET<CloneableObject>(getList(t, hash & ~ObjectFactory.SET_TYPE));
-                } else if ((hash & ObjectFactory.LIST_TYPE) == ObjectFactory.LIST_TYPE) {
-                    return new LIST<CloneableObject>(getList(t, hash & ~ObjectFactory.LIST_TYPE));
+                if ((classHash & ObjectFactory.SET_TYPE) == ObjectFactory.SET_TYPE) {
+                    return new SET<CloneableObject>(
+                            getList(t, classHash & ~ObjectFactory.SET_TYPE));
+                } else if ((classHash & ObjectFactory.LIST_TYPE) == ObjectFactory.LIST_TYPE) {
+                    return new LIST<CloneableObject>(
+                            getList(t, classHash & ~ObjectFactory.LIST_TYPE));
+                } else if (classHash >= 0) {
+                    return new LIST<CloneableObject>(getList(t, classHash));
                 } else {
-                    String className = InternalAccess.getNonInverseAttributeTypes(cls)[paramIdx];
+                    String className = InternalAccess.getNonInverseAttributeTypes(cls)[idx];
                     TypeInterface ti = (TypeInterface) ObjectFactory.createInstance(className);
                     ti.setValue(getList(t, getSuperClassListElemTypeHash(className)));
 
@@ -454,19 +327,19 @@ public class StepTokenizer {
                 }
             }
             case REAL: {
-                if (paramIdx >= hashList.length) {
+                if (skip) {
                     return new DOUBLE(t.doubleImage);
                 } else {
-                    DOUBLE d = (DOUBLE) ObjectFactory.createInstance(hashList[paramIdx]);
+                    DOUBLE d = (DOUBLE) ObjectFactory.createInstance(classHash);
                     d.setValue(t.doubleImage);
                     return d;
                 }
             }
             case STRING: {
-                if (paramIdx >= hashList.length) {
+                if (skip) {
                     return new STRING(t.image, false);
                 } else {
-                    STRING s = (STRING) ObjectFactory.createInstance(hashList[paramIdx]);
+                    STRING s = (STRING) ObjectFactory.createInstance(classHash);
                     s.setValue(new STRING(t.image, false));
                     return s;
                 }
@@ -476,16 +349,16 @@ public class StepTokenizer {
                 return null;
             }
             case INTEGER: {
-                if (paramIdx >= hashList.length) {
+                if (skip) {
                     return new INTEGER(t.intImage);
                 } else {
-                    INTEGER i = (INTEGER) ObjectFactory.createInstance(hashList[paramIdx]);
+                    INTEGER i = (INTEGER) ObjectFactory.createInstance(classHash);
                     i.setValue(t.intImage);
                     return i;
                 }
             }
             case ENUMERATION: {
-                if (paramIdx >= hashList.length) {
+                if (skip) {
                     if (t.image.equals("T")) {
                         return LOGICAL.LogicalTrue;
                     } else if (t.image.equals("F")) {
@@ -496,7 +369,6 @@ public class StepTokenizer {
                         return new ENUM(t.image);
                     }
                 } else {
-                    int classHash = hashList[paramIdx];
                     if (t.image.equals("T")) {
                         if (classHash == 47202 + 59) {
                             return BOOLEAN.BooleanTrue;
@@ -530,7 +402,7 @@ public class StepTokenizer {
                             System.out.println("Unknown Null");
                         }
                     } else {
-                        ENUM enumParameter = (ENUM) ObjectFactory.createInstance(hashList[paramIdx]);
+                        ENUM enumParameter = (ENUM) ObjectFactory.createInstance(classHash);
                         enumParameter.setValue(t.image);
                         return enumParameter;
                     }
