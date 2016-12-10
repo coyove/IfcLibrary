@@ -12,7 +12,7 @@ import java.util.Iterator;
  * Visit <a href='http://www.ifctoolsproject.com'>http://www.ifctoolsproject.com</a> for more information
  * or contact us directly: <a href='mailto:info@ifctoolsproject.com'>info@ifctoolsproject.com</a><br>
  */
-public class SET<E extends CloneableObject> extends HashSet<E> implements RootInterface
+public class SET<E extends CloneableObject> extends ArrayList<E> implements RootInterface
 {
 	private static final long serialVersionUID = 1L;
 
@@ -84,9 +84,9 @@ public class SET<E extends CloneableObject> extends HashSet<E> implements RootIn
 	 **/
 	@SuppressWarnings("unchecked")
 	public String getStepParameter(boolean isSelectType) {
-		String listString = new String("(");
+		String listString = "(";
 		int i = 0;
-		for (RootInterface ifcRootInterface : (HashSet<RootInterface>) this)
+		for (RootInterface ifcRootInterface : (ArrayList<RootInterface>) this)
 		{
 			if (i > 0 && i < this.size()) listString = listString.concat(",");
 			listString = listString.concat(ifcRootInterface

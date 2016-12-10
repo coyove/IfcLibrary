@@ -160,50 +160,43 @@ public class IfcStepParser {
 
     private void finishReadStepFile() {
         //HEADER
-        initNode(file_Description = StepTokenizer.getFile_Description());
-        initNode(file_Name = StepTokenizer.getFile_Name());
-        initNode(file_Schema = StepTokenizer.getFile_Schema());
+        file_Description = StepTokenizer.getFile_Description();
+        file_Name = StepTokenizer.getFile_Name();
+        file_Schema = StepTokenizer.getFile_Schema();
 
         StepTokenizer.destruct();
-        System.runFinalization();
+//        System.runFinalization();
 
         fireProgressEvent(new ProgressEvent(0, "initialize objects..."));
         int counter = 0;
         int progress = 0;
         int progressStep = entityInstanceNameMap.size() / 100;
 
-        for (int idx : entityInstanceNameMap.indexes()) {
-            InternalAccessClass node = entityInstanceNameMap.get(idx);
-            if (node != null) {
-                initNode(node);
-                InternalAccess.setStepParameter(node, null);
-                counter++;
-                if (counter >= progressStep) {
-                    fireProgressEvent(new ProgressEvent(++progress,
-                            "initialize objects..."));
-                    counter = 0;
-                }
+//        for (int idx : entityInstanceNameMap.indexes()) {
+//            InternalAccessClass node = entityInstanceNameMap.get(idx);
+//            if (node != null) {
+//                initNode(node);
+////                InternalAccess.setStepParameter(node, null);
+//                counter++;
+//                if (counter >= progressStep) {
+//                    fireProgressEvent(new ProgressEvent(++progress,
+//                            "initialize objects..."));
+//                    counter = 0;
+//                }
+//            }
+//        }
+        for (StepTokenizer.MissingReference mr : StepTokenizer.missingReferences) {
+            Object object = mr.key;
+            InternalAccessClass iac = entityInstanceNameMap.get(mr.instanceIdx);
+
+            if (object instanceof List) {
+                ((List) object).set(mr.idx, iac);
+            } else if (object instanceof InternalAccessClass) {
+                ArrayList<CloneableObject> params =
+                        InternalAccess.getStepParameter(((InternalAccessClass) object));
+                params.set(mr.idx, iac);
             }
         }
-//        int workerCount = 4;
-//        int workerLoad = entityInstanceNameMap.size() / workerCount;
-//        Thread[] workers = new Thread[workerCount];
-//
-//        for (int i = 0; i < workerCount; i++) {
-//            int start = i * workerLoad;
-//            int end = i == workerCount - 1 ? -1 : (i + 1) * workerLoad;
-//
-//            workers[i] = new Thread(new InitNodeWorker(start, end));
-//            workers[i].start();
-//        }
-//
-//        try {
-//            for (int i = 0; i < workerCount; i++) {
-//                workers[i].join();
-//            }
-//        } catch (InterruptedException e) {
-//            // Something bad
-//        }
 
         fireProgressEvent(new ProgressEvent(0, " "));
         System.runFinalization();
@@ -440,6 +433,7 @@ public class IfcStepParser {
 
     private static Object initNode(InternalAccessClass ClassInterfaceObject) {
         ArrayList<CloneableObject> parameters = InternalAccess.getStepParameter(ClassInterfaceObject);
+
         for (int i = 0; i < parameters.size(); i++) {
             Object object = parameters.get(i);
             if (object instanceof InstanceLineNoRef) {

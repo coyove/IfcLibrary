@@ -66,7 +66,7 @@ public class ArrayEx<E> {
 
     @SuppressWarnings("unchecked")
     public E get(int idx) {
-        return (E) buf[idx];
+        return idx >= capacity ? null : (E) buf[idx];
     }
 
     public int size() {

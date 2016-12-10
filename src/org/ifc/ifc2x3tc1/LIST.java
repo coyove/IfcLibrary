@@ -22,6 +22,10 @@ public class LIST<E extends CloneableObject> extends ArrayList<E> implements Roo
 		super();
 	}
 
+	public LIST(int cap) {
+		super(cap);
+	}
+
 	/**
 	 * Constructs a new LIST object using the given value.
 	 * @param value

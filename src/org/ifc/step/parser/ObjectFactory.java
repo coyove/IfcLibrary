@@ -36,9 +36,9 @@ public class ObjectFactory extends java.util.HashMap<String, ObjectFactory.Class
     }
 
     public static Object createInstance(String entityName) {
-//        ObjectFactory.ClassBuilder cb = FACTORY_MAP.get(entityName);
-//        return cb.instance();
-        return FACTORY_ARRAY[hash(entityName) - 59].instance();
+        int h = hash(entityName) - 59;
+//        if (h > 100000) System.out.println(entityName);
+        return FACTORY_ARRAY[h].instance();
     }
 
     public static Object createInstance(int hash) {

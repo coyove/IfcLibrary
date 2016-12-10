@@ -18,14 +18,6 @@ public class Token implements java.io.Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    public final static Token NullToken = new Token();
-    public final static Token SemiColonToken = new Token(StepTokenizer.SEMICOLON, ";");
-    public final static Token CommaToken = new Token(StepTokenizer.COMMA, ",");
-    public final static Token LParenToken = new Token(StepTokenizer.LPAREN, "(");
-    public final static Token RParenToken = new Token(StepTokenizer.RPAREN, ")");
-    public final static Token StarToken = new Token(StepTokenizer.STAR, "*");
-    public final static Token DollarToken = new Token(StepTokenizer.DOLLAR, "$");
-
     public int intImage;
 
     public double doubleImage;

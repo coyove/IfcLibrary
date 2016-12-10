@@ -3,6 +3,7 @@
 package org.ifc.step.parser;
 
 import java.io.*;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 import org.ifc.ifc2x3tc1.*;
@@ -53,6 +54,20 @@ public class StepTokenizer {
     private static File_Schema file_Schema = null;
     private static File_Description file_Description = null;
     private static File_Name file_Name = null;
+
+    static class MissingReference {
+        Object key;
+        int idx;
+        int instanceIdx;
+
+        public MissingReference(Object k, int i, int ii) {
+            key = k;
+            idx = i;
+            instanceIdx = ii;
+        }
+    }
+
+    public static List<MissingReference> missingReferences = new ArrayList<MissingReference>(1024);
 
     public StepTokenizer() {
     }
@@ -161,8 +176,8 @@ public class StepTokenizer {
         parseParameters(t, file_Schema);
 
 //        InternalAccess.setStepParameter(file_Schema, node.getParameter());
-        LIST<STRING> fileSchemes = (LIST<STRING>) InternalAccess.getStepParameter(file_Schema).get(0);
-        String fileSchema = fileSchemes.get(0).getDecodedValue();
+//        LIST<STRING> fileSchemes = (LIST<STRING>) InternalAccess.getStepParameter(file_Schema).get(0);
+        String fileSchema = file_Schema.getschemaIdentifiers().get(0).getDecodedValue();
         if (!fileSchema.startsWith("IFC2X3")) {
             throw new Exception("File schema" + fileSchema + " is not supported");
         }
@@ -171,10 +186,10 @@ public class StepTokenizer {
     private static int getSuperClassListElemTypeHash(String className) {
         try {
             Class<?> parameterClass = Class.forName(IfcStepParser.PACKAGE_NAME + className);
-            String scn = parameterClass.getGenericSuperclass().toString();
-            scn = scn.substring(IfcStepParser.PACKAGE_NAME.length());
+            String scn = ((Class) ((ParameterizedType) parameterClass.getGenericSuperclass())
+                    .getActualTypeArguments()[0]).getSimpleName();
 
-            return ObjectFactory.hash(scn.substring(scn.indexOf("<") + 1, scn.lastIndexOf(">")));
+            return ObjectFactory.hash(scn);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
@@ -182,33 +197,12 @@ public class StepTokenizer {
         }
     }
 
-    private static ArrayList<CloneableObject> getList(Token t, int hash) {
-        boolean listEnd = false;
-        ArrayList<CloneableObject> list = new ArrayList<CloneableObject>(32);
-
-        while (!listEnd) {
-            t = StepTokenizer.getNextToken();
-            switch (t.kind) {
-                case COMMA:
-                    break;
-                case RPAREN: {
-                    listEnd = true;
-                    break;
-                }
-                default: {
-                    list.add(getType(t, null, ObjectFactory.SKIP_TYPE, 0));
-                    break;
-                }
-            }
-        }
-
-        return list;
-    }
-
     private static void parseParameters(Token t, InternalAccessClass cls) {
         ArrayList<CloneableObject> ret = new ArrayList<CloneableObject>(16);
         int[] hashList = InternalAccess.getNonInverseHashAttributeTypes(cls);
         int paramIdx = 0;
+
+        int mr1 = missingReferences.size();
 
         finish:
         while (true) {
@@ -222,24 +216,27 @@ public class StepTokenizer {
                     break;
                 default:
                     int hash = paramIdx < hashList.length ? hashList[paramIdx] : ObjectFactory.SKIP_TYPE;
-                    ret.add(getType(t, cls, hash, paramIdx));
-                    paramIdx++;
+                    ret.add(getType(t, hash, cls, paramIdx++));
             }
         }
 
-        InternalAccess.setStepParameter(cls, ret);
-//        InternalAccess.initialize(cls, ret);
+        if (mr1 == missingReferences.size()) {
+            // We can directly init it
+            InternalAccess.initialize(cls, ret);
+        } else {
+            InternalAccess.setStepParameter(cls, ret);
+        }
     }
 
     private static void parse(BufferedReaderEx br) throws Exception {
         __input_stream = br;
         int header = ObjectFactory.hash("HEADER");
+        missingReferences = new ArrayList<MissingReference>(1024);
 
         for (Token t = StepTokenizer.getNextToken();
              t.kind != EOF;
              t = StepTokenizer.getNextToken()) {
 
-//            if (t.image.startsWith("HEADER")) {
             if (t.intImage == header) { // 2696 is the hash of "HEADER"
                 parseHeader(t);
             }
@@ -263,15 +260,31 @@ public class StepTokenizer {
         }
     }
 
-    private static CloneableObject getType(Token t, InternalAccessClass cls, int classHash, int idx) {
+    /**
+     *
+     * @param t
+     * @param classHash
+     * @param cls
+     * @param idx cls and idx must be both null or provided
+     * @return
+     */
+    private static CloneableObject getType(Token t, int classHash, Object cls, int idx) {
         boolean skip = classHash << 4 >> 4 != classHash;
         switch (t.kind) {
             case DOLLAR:
                 return null;
             case STAR:
                 return null;
-            case ENTITY_INSTANCE_NAME:
-                return new InstanceLineNoRef(t.intImage);
+            case ENTITY_INSTANCE_NAME: {
+                // return new InstanceLineNoRef(t.intImage);
+                InternalAccessClass iac;
+                if ((iac = nodeMap.get(t.intImage)) != null) {
+                    return iac;
+                } else {
+                    missingReferences.add(new MissingReference(cls, idx, t.intImage));
+                    return new InstanceLineNoRef(t.intImage);
+                }
+            }
             case STANDARD_KEYWORD: {
                 CloneableObject co = (CloneableObject) ObjectFactory.createInstance(t.intImage);
                 if (co instanceof InternalAccessClass) {
@@ -292,7 +305,7 @@ public class StepTokenizer {
                                 break;
                             }
                             default: {
-                                parameters.add(getType(t, iac, hashList[i++], i));
+                                parameters.add(getType(t, hashList[i++], iac, i));
                                 break;
                             }
                         }
@@ -303,7 +316,7 @@ public class StepTokenizer {
                 } else {
                     TypeInterface ti = ((TypeInterface) co);
                     StepTokenizer.getNextToken(); // (
-                    ti.setValue(getType(StepTokenizer.getNextToken(), null, t.intImage, 0));
+                    ti.setValue(getType(StepTokenizer.getNextToken(), t.intImage, null, 0));
                     StepTokenizer.getNextToken(); // )
 
                     return co;
@@ -311,19 +324,32 @@ public class StepTokenizer {
             }
             case LPAREN: {
                 if ((classHash & ObjectFactory.SET_TYPE) == ObjectFactory.SET_TYPE) {
-                    return new SET<CloneableObject>(
-                            getList(t, classHash & ~ObjectFactory.SET_TYPE));
+                    SET<CloneableObject> ret = new SET<CloneableObject>(16);
+                    getList(ret, classHash & ~ObjectFactory.SET_TYPE);
+                    return ret;
                 } else if ((classHash & ObjectFactory.LIST_TYPE) == ObjectFactory.LIST_TYPE) {
-                    return new LIST<CloneableObject>(
-                            getList(t, classHash & ~ObjectFactory.LIST_TYPE));
-                } else if (classHash >= 0) {
-                    return new LIST<CloneableObject>(getList(t, classHash));
+                    LIST<CloneableObject> ret = new LIST<CloneableObject>(16);
+                    getList(ret, classHash & ~ObjectFactory.LIST_TYPE);
+                    return ret;
                 } else {
-                    String className = InternalAccess.getNonInverseAttributeTypes(cls)[idx];
-                    TypeInterface ti = (TypeInterface) ObjectFactory.createInstance(className);
-                    ti.setValue(getList(t, getSuperClassListElemTypeHash(className)));
+                    switch (classHash) {
+                        case 2560 + 59:  // double
+                        case 30014 + 59: // string
+                        case 47825 + 59: // integer
+                            LIST<CloneableObject> ret = new LIST<CloneableObject>(16);
+                            getList(ret, classHash);
+                            return ret;
+                        default:
+                            String className =
+                                    InternalAccess.getNonInverseAttributeTypes((InternalAccessClass) cls)[idx];
+                            TypeInterface ti =
+                                    (TypeInterface) ObjectFactory.createInstance(className.toUpperCase());
+                            LIST<CloneableObject> list = new LIST<CloneableObject>(16);
+                            getList(list, getSuperClassListElemTypeHash(className));
+                            ti.setValue(list);
 
-                    return ti;
+                            return ti;
+                    }
                 }
             }
             case REAL: {
@@ -413,76 +439,48 @@ public class StepTokenizer {
         return null;
     }
 
-    private static CloneableObject getType(Token t, int hash) {
-        switch (t.kind) {
-            case DOLLAR:
-                return null;
-            case STAR:
-                return null;
-            case ENTITY_INSTANCE_NAME:
-                return new InstanceLineNoRef(t.intImage);
-            case REAL: {
-                DOUBLE d = (DOUBLE) ObjectFactory.createInstance(hash);
-                d.setValue(t.doubleImage);
-                return d;
-            }
-            case STRING: {
-                STRING s = (STRING) ObjectFactory.createInstance(hash);
-                s.setValue(new STRING(t.image, false));
-                return s;
-            }
-            case BINARY: {
-                System.exit(0);
-                return null;
-            }
-            case INTEGER: {
-                INTEGER i = (INTEGER) ObjectFactory.createInstance(hash);
-                i.setValue(t.intImage);
-                return i;
-            }
-            case ENUMERATION: {
-                if (t.image.equals("T")) {
-                    if (hash == 47202 + 59) {
-                        return BOOLEAN.BooleanTrue;
-                    } else if (hash == 4564 + 59) {
-                        return IfcBoolean.IfcBooleanTrue;
-                    } else if (hash == 47225 + 59) {
-                        return LOGICAL.LogicalTrue;
-                    } else if (hash == 28779 + 59) {
-                        return IfcLogical.IfcLogicalTrue;
-                    } else {
-                        System.out.println("Unknown True");
-                    }
-                } else if (t.image.equals("F")) {
-                    if (hash == 47202 + 59) {
-                        return BOOLEAN.BooleanFalse;
-                    } else if (hash == 4564 + 59) {
-                        return IfcBoolean.IfcBooleanFalse;
-                    } else if (hash == 47225 + 59) {
-                        return LOGICAL.LogicalFalse;
-                    } else if (hash == 28779 + 59) {
-                        return IfcLogical.IfcLogicalFalse;
-                    } else {
-                        System.out.println("Unknown False");
-                    }
-                } else if (t.image.equals("U")) {
-                    if (hash == 47225 + 59) {
-                        return LOGICAL.LogicalNull;
-                    } else if (hash == 28779 + 59) {
-                        return IfcLogical.IfcLogicalNull;
-                    } else {
-                        System.out.println("Unknown Null");
-                    }
-                } else {
-                    ENUM enumParameter = (ENUM) ObjectFactory.createInstance(hash);
-                    enumParameter.setValue(t.image);
-                    return enumParameter;
+    private static void getList(List list, int hash) {
+        boolean listEnd = false;
+        Token t;
+        int i = 0;
+
+        while (!listEnd) {
+            t = StepTokenizer.getNextToken();
+            switch (t.kind) {
+                case COMMA:
+                    break;
+                case RPAREN: {
+                    listEnd = true;
+                    break;
                 }
-                break;
+                default: {
+                    list.add(getType(t, hash, list, i++));
+                    break;
+                }
             }
         }
+    }
 
-        return null;
+    private static void getList(HashSet set, int hash) {
+        boolean listEnd = false;
+        Token t;
+        int i = 0;
+
+        while (!listEnd) {
+            t = StepTokenizer.getNextToken();
+            switch (t.kind) {
+                case COMMA:
+                    break;
+                case RPAREN: {
+                    listEnd = true;
+                    break;
+                }
+                default: {
+                    set.add(getType(t, hash, set, i++));
+                    break;
+                }
+            }
+        }
     }
 
     static protected BufferedReaderEx __input_stream;
@@ -629,7 +627,7 @@ public class StepTokenizer {
         }
 
 //        return new Token(STANDARD_KEYWORD, new String(__static_keyword_buf, 0, idx + 1), h >> 1);
-        return new Token(STANDARD_KEYWORD, h >> 1);
+        return TokenFactory.get(h >> 1);
     }
 
     /**
@@ -685,7 +683,7 @@ public class StepTokenizer {
             case '#': // 35
                 return readName();
             case '$': // 36
-                return Token.DollarToken;
+                return TokenFactory.DollarToken;
             case 37:
                 return getNextToken(); // Shouldn't happen
             case 38:
@@ -693,15 +691,15 @@ public class StepTokenizer {
             case '\'': // 39
                 return readString();
             case '(': // 40
-                return Token.LParenToken;
+                return TokenFactory.LParenToken;
             case ')': // 41
-                return Token.RParenToken;
+                return TokenFactory.RParenToken;
             case '*': // 42
-                return Token.StarToken;
+                return TokenFactory.StarToken;
             case 43:
                 return getNextToken(); // Shouldn't happen
             case ',': // 44
-                return Token.CommaToken; // 45 is '-'
+                return TokenFactory.CommaToken; // 45 is '-'
             case '.': // 46
                 return readEnum();
             case '/': // 47
@@ -722,11 +720,11 @@ public class StepTokenizer {
             case 58:
                 return getNextToken(); // Shouldn't happen
             case ';': // 59
-                return Token.SemiColonToken;
+                return TokenFactory.SemiColonToken;
             case 60:
                 return getNextToken(); // Shouldn't happen
             case '=': // 61
-                return Token.NullToken;
+                return TokenFactory.NullToken;
             case 62:
             case 63:
             case 64:
@@ -764,7 +762,7 @@ public class StepTokenizer {
                 } else {
                     System.out.println("Unknown char at line " + __input_stream.getCurLine() +
                             ": [" + String.valueOf((char) nextChar) + "]");
-                    return Token.NullToken;
+                    return TokenFactory.NullToken;
                 }
         }
     }
