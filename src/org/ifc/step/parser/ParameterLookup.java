@@ -3,6 +3,7 @@ package org.ifc.step.parser;
 import org.ifc.ifc2x3tc1.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -884,19 +885,28 @@ public class ParameterLookup {
 
     public static Object getFieldRawValue(Object obj, String name) {
         try {
-            Field f = obj.getClass().getDeclaredField(name);
-            if (f == null) {
-                return null;
+            Field f;
+            Class oc = obj.getClass();
+
+            while (true) {
+                try {
+                    f = oc.getDeclaredField(name);
+                    break;
+                } catch (Exception e) {
+                    if ((oc = oc.getSuperclass()) == null) {
+                        return null;
+                    }
+                }
             }
 
             f.setAccessible(true);
-
-            Class cls = f.getType();
             Object v = f.get(obj);
 
             if (v == null) {
                 return null;
             }
+
+            Class cls = v.getClass();
 
             while (true) {
                 if (cls == null || cls == RootInterface.class) {
@@ -927,11 +937,20 @@ public class ParameterLookup {
                     return ((ENUM) v).value.name();
                 }
 
+                if (cls == SET.class) {
+                    return ((SET) v).toArray();
+                }
+
+                if (cls == LIST.class) {
+                    return ((LIST) v).toArray();
+                }
+
                 cls = cls.getSuperclass();
             }
 
             return v;
-        } catch(Exception e){
+        } catch (Exception ex) {
+            // Shouldn't happen
             return null;
         }
     }

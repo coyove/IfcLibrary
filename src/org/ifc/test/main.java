@@ -1,6 +1,6 @@
 package org.ifc.test;
 
-import org.ifc.ifc2x3tc1.ClassInterface;
+import org.ifc.ifc2x3tc1.*;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.FactorySwitchGenerator;
 import org.ifc.step.parser.ObjectFactory;
@@ -61,18 +61,18 @@ public class main {
     public static void main(String[] args) throws Exception {
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
-        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
         System.out.println(model.getIfcObjects().size());
 //        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
-        for (ClassInterface ci : model.getIfcObjects()) {
-//             if (ParameterLookup.hasField(ci, "Name")) {
-            Object v = ParameterLookup.getFieldRawValue(ci, "Name");
-            if (v != null)
-                 System.out.println(v + " " + v.getClass().getSimpleName());
-//             }
-        }
+//        for (ClassInterface ci : model.getIfcObjects()) {
+//            if (ci instanceof IfcRelAssignsToGroup) {
+//                for (IfcObjectDefinition iod : ((IfcRelAssignsToGroup) ci).getRelatedObjects()) {
+//                    iod.getName()
+//                }
+//            }
+//        }
 
         System.out.println(System.currentTimeMillis() - start);
     }
