@@ -1,11 +1,18 @@
 package org.ifc.test;
 
+import org.ifc.ifc2x3tc1.ClassInterface;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.FactorySwitchGenerator;
+import org.ifc.step.parser.ObjectFactory;
+import org.ifc.step.parser.ParameterLookup;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -45,20 +52,28 @@ public class main {
         }
     }
 
+    static List omits = Arrays.asList("nonInverseAttributes",
+            "nonInverseHashAttributes",
+            "stepParameter",
+            "listenerList",
+            "stepLineNumber");
+
     public static void main(String[] args) throws Exception {
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
-
-//        Thread.sleep(5000);
-
         model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\main.ifc"));
         System.out.println(model.getIfcObjects().size());
 //        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
-        System.out.println(model.getIfcObjectByEntityInstanceName(41).getStepLine());
-        System.out.println(model.getIfcObjectByEntityInstanceName(11885).getStepLine());
+        for (ClassInterface ci : model.getIfcObjects()) {
+//             if (ParameterLookup.hasField(ci, "Name")) {
+            Object v = ParameterLookup.getFieldRawValue(ci, "Name");
+            if (v != null)
+                 System.out.println(v + " " + v.getClass().getSimpleName());
+//             }
+        }
 
-        model.writeStepfile(new FileOutputStream("main.ifc"));
+        System.out.println(System.currentTimeMillis() - start);
     }
 }

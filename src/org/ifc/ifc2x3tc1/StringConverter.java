@@ -22,8 +22,7 @@ public class StringConverter
 	/**
 	 * Decodes a given string. All mechanisms according to ISO-10303-21
 	 * (�6.3.3.1-�6.3.3.3) are supported and are selected automatically.
-	 * @param string
-	 *            String to be decoded
+	 * @param string String to be decoded
 	 * @return decoded string
 	 * @throws CharacterCodingException
 	 */
@@ -33,13 +32,12 @@ public class StringConverter
 		// 32/126 160/254 liegt
 		// sonst exception werfen
 
-		CharsetDecoder decoderIso8859_1 = Charset.forName("ISO-8859-1")
-				.newDecoder();
+		CharsetDecoder decoderIso8859_1 = Charset.forName("ISO-8859-1").newDecoder();
 		CharsetDecoder decoderUTF16 = Charset.forName("UTF-16BE").newDecoder();
 		CharsetDecoder decoderUTF32 = Charset.forName("UTF-32").newDecoder();
 		CharsetDecoder decoder = null;
 		boolean extendedCodePage = false;
-		String decodedString = new String();
+		StringBuilder decodedString = new StringBuilder(64);
 		char[] characterArray = string.toCharArray();
 		int codePoint;
 		int index = -1;
@@ -47,28 +45,26 @@ public class StringConverter
 			index++;
 			codePoint = Character.codePointAt(characterArray, index);
 			if (codePoint < 32 || codePoint > 126) {
-				CharacterCodingException e = new CharacterCodingException();
-				throw e;
+				throw new CharacterCodingException();
 			}
 
 			// single apostroph is encoded as two consecutive apostrophes
 			if (characterArray[index] == '\'') {
-				decodedString += "\'";
+				decodedString.append("\'");
 				index++;
 			} else if (characterArray[index] == '\\') {
 				index++;
 				if (characterArray[index] == '\\') { // not a control sequence
 														// but a normal back
 														// slash
-					decodedString += "\\";
+					decodedString.append("\\");
 				} else if (characterArray[index] == 'S') {
 					index++;
-					if (extendedCodePage) decodedString = decodedString
-							.concat(decoder.decode(
-									buffer("" + characterArray[++index]))
+					if (extendedCodePage)
+						decodedString.append(decoder.decode(buffer("" + characterArray[++index]))
 									.toString());
 					else
-						decodedString = decodedString.concat(new String(
+						decodedString.append(new String(
 								Character.toChars(Character.codePointAt(
 										characterArray, ++index) + 128)));
 				} else if (characterArray[index] == 'P') {
@@ -85,8 +81,7 @@ public class StringConverter
 						codePoints[0] = Integer.decode("0x"
 								+ characterArray[++index]
 								+ characterArray[++index]);
-						decodedString = decodedString.concat(decoderIso8859_1
-								.decode(buffer(codePoints)).toString());
+						decodedString.append(decoderIso8859_1.decode(buffer(codePoints)).toString());
 					} else if (characterArray[index] == '2') {
 						index++;
 						// UTF-16BE (UCS-2)
@@ -99,8 +94,7 @@ public class StringConverter
 							codePoints[1] = Integer.decode("0x"
 									+ characterArray[++index]
 									+ characterArray[++index]);
-							decodedString = decodedString.concat(decoderUTF16
-									.decode(buffer(codePoints)).toString());
+							decodedString.append(decoderUTF16.decode(buffer(codePoints)).toString());
 						}
 						while (characterArray[index + 1] != '\\'); // \X0\ is
 						// the
@@ -125,8 +119,7 @@ public class StringConverter
 							codePoints[3] = Integer.decode("0x"
 									+ characterArray[++index]
 									+ characterArray[++index]);
-							decodedString = decodedString.concat(decoderUTF32
-									.decode(buffer(codePoints)).toString());
+							decodedString.append(decoderUTF32.decode(buffer(codePoints)).toString());
 						}
 						while (characterArray[index + 1] != '\\'); // \X0\ is
 						// the
@@ -136,10 +129,9 @@ public class StringConverter
 					}
 				}
 			} else
-				decodedString = decodedString.concat(new String(Character
-						.toChars(characterArray[index])));
+				decodedString.append(new String(Character.toChars(characterArray[index])));
 		}
-		return decodedString;
+		return decodedString.toString();
 	}
 
 	/**
