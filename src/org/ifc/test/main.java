@@ -1,10 +1,6 @@
 package org.ifc.test;
 
-import org.ifc.ifc2x3tc1.*;
 import org.ifc.ifcmodel.IfcModel;
-import org.ifc.step.parser.FactorySwitchGenerator;
-import org.ifc.step.parser.ObjectFactory;
-import org.ifc.step.parser.ParameterLookup;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 
 import java.io.FileInputStream;
