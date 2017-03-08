@@ -2,6 +2,8 @@ package org.ifc.test;
 
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
+import org.ifc.toolkit.Point;
+import org.ifc.toolkit.util.Rasterizer;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -55,6 +57,12 @@ public class main {
             "stepLineNumber");
 
     public static void main(String[] args) throws Exception {
+        for (Point point : Rasterizer.rasterizeEllipseCurve(0, 0, 4, 2, 0, Math.PI)) {
+            System.out.println(point);
+        }
+
+        System.exit(0);
+
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
         model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
