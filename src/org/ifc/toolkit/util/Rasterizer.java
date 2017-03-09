@@ -14,22 +14,22 @@ public final class Rasterizer {
     public final static class RasterizerException extends Exception {
     }
 
-    public static List<Point> rasterizeEllipseCurve(double xCenter,
-                                                    double yCenter,
-                                                    double xRadius,
-                                                    double yRadius,
-                                                    double startAngle,
-                                                    double endAngle) throws RasterizerException {
-        return rasterizeEllipseCurve(xCenter, yCenter, xRadius, yRadius, startAngle, endAngle, segments);
+    public static List<Point> interpolateEllipseCurve(double xCenter,
+                                                      double yCenter,
+                                                      double xRadius,
+                                                      double yRadius,
+                                                      double startAngle,
+                                                      double endAngle) throws RasterizerException {
+        return interpolateEllipseCurve(xCenter, yCenter, xRadius, yRadius, startAngle, endAngle, segments);
     }
 
-    public static List<Point> rasterizeEllipseCurve(double xCenter,
-                                                    double yCenter,
-                                                    double xRadius,
-                                                    double yRadius,
-                                                    double startAngle,
-                                                    double endAngle,
-                                                    int segments) throws RasterizerException {
+    public static List<Point> interpolateEllipseCurve(double xCenter,
+                                                      double yCenter,
+                                                      double xRadius,
+                                                      double yRadius,
+                                                      double startAngle,
+                                                      double endAngle,
+                                                      int segments) throws RasterizerException {
         if (xRadius <= 0 || yRadius <= 0 || startAngle > endAngle || segments <= 0)
             throw new RasterizerException();
 

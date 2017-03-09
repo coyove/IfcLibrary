@@ -19,7 +19,7 @@ public class Profile extends Element {
         this.profile = def;
     }
 
-    public List<Point> rasterizeCurveProfile() throws WrongProfileType {
+    public List<Point> interpolateCurveProfile() throws WrongProfileType {
         if (this.profile.getProfileType().value == IfcProfileTypeEnum.IfcProfileTypeEnum_internal.AREA)
             throw new WrongProfileType();
 
@@ -43,7 +43,7 @@ public class Profile extends Element {
 
             }
         } else if (this.profile instanceof IfcArbitraryOpenProfileDef) {
-
+            ((IfcArbitraryOpenProfileDef) this.profile).getCurve();
         } else if (this.profile instanceof IfcArbitraryClosedProfileDef) {
 
         } else if (this.profile instanceof IfcCompositeProfileDef) {

@@ -49,4 +49,13 @@ public class Point extends Element {
     public String toString() {
         return "Point(" + x + ", " + y + ", " + z + ")";
     }
+
+    public void clamp(double min, double max) {
+        if (x < min) x = min;
+        if (x > max) x = max;
+        if (y < min) y = min;
+        if (y > max) y = max;
+        if (z < min) z = min;
+        if (z > max) z = max;
+    }
 }

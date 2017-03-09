@@ -2,65 +2,30 @@ package org.ifc.test;
 
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
+import org.ifc.toolkit.Matrix;
 import org.ifc.toolkit.Point;
+import org.ifc.toolkit.Vector;
+import org.ifc.toolkit.test.SdsObjWriter;
 import org.ifc.toolkit.util.Rasterizer;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**
  * Created by coyove on 2016/12/5.
  */
 public class main {
-    public static double pp(String s) {
-        char[] buf = s.toCharArray();
-
-        for (int i = 0; i < buf.length; i++) {
-            if (i == 0) {
-                UnsafeDoubleParser.init(buf[i]);
-            } else {
-                UnsafeDoubleParser.push(buf[i]);
-            }
-        }
-
-        return UnsafeDoubleParser.evalDouble();
-    }
-
-    public static void test(String s) throws Exception {
-        double d1 = UnsafeDoubleParser.parse(s);
-        char[] buf = s.toCharArray();
-
-        for (int i = 0; i < buf.length; i++) {
-            if (i == 0) {
-                UnsafeDoubleParser.init(buf[i]);
-            } else {
-                UnsafeDoubleParser.push(buf[i]);
-            }
-        }
-
-        double d2= UnsafeDoubleParser.evalDouble();
-        if (d1 != d2) {
-            System.out.println(d1);
-            System.out.println(d2);
-            throw new Exception();
-        }
-    }
-
-    static List omits = Arrays.asList("nonInverseAttributes",
-            "nonInverseHashAttributes",
-            "stepParameter",
-            "listenerList",
-            "stepLineNumber");
-
     public static void main(String[] args) throws Exception {
-        for (Point point : Rasterizer.rasterizeEllipseCurve(0, 0, 4, 2, 0, Math.PI)) {
-            System.out.println(point);
-        }
-
+        SdsObjWriter obj = new SdsObjWriter();
+        obj.addFace(new ArrayList<Vector>() {{
+            add(new Vector(1, 0, 0));
+            add(new Vector(0, 1, 0));
+            add(new Vector(1, 1, 0));
+            add(new Vector(-1, 0.5, 0));
+        }});
+        obj.write("test.obj");
         System.exit(0);
 
         IfcModel model = new IfcModel();
