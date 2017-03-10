@@ -1,52 +1,13 @@
 package org.ifc.ifcmodel;
 
 import org.ifc.guidcompressor.GuidCompressor;
-import org.ifc.ifc2x3tc1.ClassInterface;
-import org.ifc.ifc2x3tc1.DOUBLE;
-import org.ifc.ifc2x3tc1.File_Description;
-import org.ifc.ifc2x3tc1.File_Name;
-import org.ifc.ifc2x3tc1.File_Schema;
-import org.ifc.ifc2x3tc1.IfcApplication;
-import org.ifc.ifc2x3tc1.IfcAxis2Placement3D;
-import org.ifc.ifc2x3tc1.IfcBuilding;
-import org.ifc.ifc2x3tc1.IfcBuildingStorey;
-import org.ifc.ifc2x3tc1.IfcCartesianPoint;
-import org.ifc.ifc2x3tc1.IfcChangeActionEnum;
-import org.ifc.ifc2x3tc1.IfcDimensionCount;
-import org.ifc.ifc2x3tc1.IfcElementCompositionEnum;
-import org.ifc.ifc2x3tc1.IfcGeometricRepresentationContext;
-import org.ifc.ifc2x3tc1.IfcGloballyUniqueId;
-import org.ifc.ifc2x3tc1.IfcIdentifier;
-import org.ifc.ifc2x3tc1.IfcLabel;
-import org.ifc.ifc2x3tc1.IfcLengthMeasure;
-import org.ifc.ifc2x3tc1.IfcLocalPlacement;
-import org.ifc.ifc2x3tc1.IfcObjectDefinition;
-import org.ifc.ifc2x3tc1.IfcOrganization;
-import org.ifc.ifc2x3tc1.IfcOwnerHistory;
-import org.ifc.ifc2x3tc1.IfcPerson;
-import org.ifc.ifc2x3tc1.IfcPersonAndOrganization;
-import org.ifc.ifc2x3tc1.IfcProject;
-import org.ifc.ifc2x3tc1.IfcRelAggregates;
-import org.ifc.ifc2x3tc1.IfcRepresentationContext;
-import org.ifc.ifc2x3tc1.IfcRoot;
-import org.ifc.ifc2x3tc1.IfcSIUnit;
-import org.ifc.ifc2x3tc1.IfcSIUnitName;
-import org.ifc.ifc2x3tc1.IfcText;
-import org.ifc.ifc2x3tc1.IfcTimeStamp;
-import org.ifc.ifc2x3tc1.IfcUnit;
-import org.ifc.ifc2x3tc1.IfcUnitAssignment;
-import org.ifc.ifc2x3tc1.IfcUnitEnum;
-import org.ifc.ifc2x3tc1.InternalAccess;
-import org.ifc.ifc2x3tc1.InternalAccessClass;
-import org.ifc.ifc2x3tc1.LIST;
-import org.ifc.ifc2x3tc1.RootInterface;
-import org.ifc.ifc2x3tc1.SET;
-import org.ifc.ifc2x3tc1.STRING;
-import org.ifc.ifc2x3tc1.TimeStampText;
+import org.ifc.ifc2x3tc1.*;
 import org.ifc.step.parser.IfcStepParser;
 import org.ifc.step.parser.StaticStepParser;
 import org.ifc.step.parser.util.ProgressEvent;
 import org.ifc.step.parser.util.StepParserProgressListener;
+import org.ifc.toolkit.element.Element;
+import org.ifc.toolkit.element.Wall;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
@@ -363,6 +324,10 @@ public class IfcModel {
                     return (ClassInterface) ifcObject;
         }
         return null;
+    }
+
+    public Element getElement(int iid) {
+        return new Wall(((IfcWall) entityInstanceNameMap.get(iid)));
     }
 
     /**

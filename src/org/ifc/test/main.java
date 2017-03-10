@@ -5,6 +5,7 @@ import org.ifc.step.parser.util.UnsafeDoubleParser;
 import org.ifc.toolkit.Matrix;
 import org.ifc.toolkit.Point;
 import org.ifc.toolkit.Vector;
+import org.ifc.toolkit.element.Wall;
 import org.ifc.toolkit.test.SdsObjWriter;
 import org.ifc.toolkit.util.Rasterizer;
 
@@ -18,19 +19,19 @@ import java.util.List;
  */
 public class main {
     public static void main(String[] args) throws Exception {
-        SdsObjWriter obj = new SdsObjWriter();
-        obj.addFace(new ArrayList<Vector>() {{
-            add(new Vector(1, 0, 0));
-            add(new Vector(0, 1, 0));
-            add(new Vector(1, 1, 0));
-            add(new Vector(-1, 0.5, 0));
-        }});
-        obj.write("test.obj");
-        System.exit(0);
+//        SdsObjWriter obj = new SdsObjWriter();
+//        obj.addFace(new ArrayList<Vector>() {{
+//            add(new Vector(1, 0, 0));
+//            add(new Vector(0, 1, 0));
+//            add(new Vector(1, 1, 0));
+//            add(new Vector(-1, 0.5, 0));
+//        }});
+//        obj.write("test.obj");
+//        System.exit(0);
 
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
-        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\main.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\hw.ifc"));
         System.out.println(model.getIfcObjects().size());
 //        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
@@ -42,6 +43,10 @@ public class main {
 //                }
 //            }
 //        }
+
+        for (Vector v : ((Wall) model.getElement(3529)).getGeometry()) {
+            System.out.println(v);
+        }
 
         System.out.println(System.currentTimeMillis() - start);
     }

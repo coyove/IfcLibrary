@@ -9,7 +9,7 @@ import org.ejml.ops.CommonOps;
 public class Matrix {
 //    protected DenseMatrix64F matrix;
 
-    public static class InvalidAxisException extends Exception {
+    public static class InvalidAxisException extends RuntimeException {
     }
 
     public static class RotationAlongAxis {
@@ -28,10 +28,23 @@ public class Matrix {
 
     public static class Transform {
         protected DenseMatrix64F matrix;
+        private DenseMatrix64F swap;
+
+        public Transform() {
+            matrix = new DenseMatrix64F(4, 4);
+            swap = new DenseMatrix64F(4, 4);
+
+            matrix.unsafe_set(0, 0, 1);
+            matrix.unsafe_set(1, 1, 1);
+            matrix.unsafe_set(2, 2, 1);
+            matrix.unsafe_set(3, 3, 1);
+        }
 
         public Transform(DenseMatrix64F r, Vector t, double s) {
+            this();
+
             r.reshape(4, 4, true);
-            r.set(3, 3, 1);
+            r.unsafe_set(3, 3, 1);
 
             DenseMatrix64F translate = new DenseMatrix64F(4, 4, true,
                     1, 0, 0, t.x,
@@ -45,18 +58,52 @@ public class Matrix {
                     0, 0, s, 0,
                     0, 0, 0, 1);
 
-            matrix = new DenseMatrix64F(4, 4);
-            DenseMatrix64F tmp = new DenseMatrix64F(4, 4);
-
-            CommonOps.mult(translate, r, tmp);
-            CommonOps.mult(tmp, scale, matrix);
+            CommonOps.mult(translate, r, swap);
+            CommonOps.mult(swap, scale, matrix);
         }
+
+        public synchronized void transform(Transform t) {
+            CommonOps.mult(t.matrix, this.matrix, swap);
+            DenseMatrix64F tmp = matrix;
+            matrix = swap;
+            swap = tmp;
+        }
+
+        public synchronized Vector transform(Vector v) {
+            DenseMatrix64F c = new DenseMatrix64F(4, 1);
+            DenseMatrix64F b = new DenseMatrix64F(4, 1, true, v.x, v.y, v.z, 1);
+
+            CommonOps.mult(this.matrix, b, c);
+            return v;
+        }
+    }
+
+    public static DenseMatrix64F makeIdentity(int rows) {
+        DenseMatrix64F m = new DenseMatrix64F(rows, rows);
+        for (int i = 0; i < rows; i++)
+            m.unsafe_set(i, i, 1);
+
+        return m;
     }
 
     public Matrix() {
     }
 
-    private static DenseMatrix64F getRotationMatrix(RotationAlongAxis rotation)
+//    public static void swap(DenseMatrix64F left, DenseMatrix64F right) {
+//        if (left.numRows == right.numRows && left.numCols == right.numCols) {
+//            for (int i = 0; i < left.numRows; i++) {
+//                for (int j = 0; j < left.numCols; j++) {
+//                    double t = left.unsafe_get(i, j);
+//                    left.unsafe_set(i, j, right.unsafe_get(i, j));
+//                    right.unsafe_set(i, j, t);
+//                }
+//            }
+//        } else {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
+
+    public static DenseMatrix64F getRotationMatrix(RotationAlongAxis rotation)
             throws InvalidAxisException {
         double s = Math.sin(rotation.angle);
         double c = Math.cos(rotation.angle);

@@ -39,7 +39,7 @@ public class SdsObjWriter {
         try {
             FileOutputStream out = new FileOutputStream(fn);
             for (Vector v : vectors)
-                out.write(("v " + v.getX() + " " + v.getY() + " " + v.getZ() + "\n").getBytes());
+                out.write(("v " + v.x + " " + v.y + " " + v.z + "\n").getBytes());
 
             for (Face face : faces) {
                 out.write('f');
