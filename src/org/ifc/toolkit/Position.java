@@ -17,10 +17,9 @@ public class Position {
             if (ref == null) return local;
 
             Matrix.Transform global = calcPlacementTransform(ref);
-            global.transform(local);
+            local.transform(global);
 
-            return global;
-
+            return local;
         } else { // IfcGridPlacement
             throw new UnsupportedOperationException();
         }
@@ -41,7 +40,7 @@ public class Position {
             return new Matrix.Transform(rm, loc, 1.0);
         } else {
             Vector loc = Vector.from(((IfcAxis2Placement3D) p).getLocation());
-            Vector xAxis = Vector.from(((IfcAxis2Placement3D) p).getRefDirection());
+            Vector xAxis = Vector.from(((IfcAxis2Placement3D) p).getRefDirection(), 1, 0, 0);
             Vector zAxis = Vector.from(((IfcAxis2Placement3D) p).getAxis());
 
             if ((zAxis.x == 0.0D) && (zAxis.y == 0.0D) && (zAxis.z == 0.0D)) {

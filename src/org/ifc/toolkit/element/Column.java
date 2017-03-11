@@ -11,22 +11,22 @@ import java.util.List;
 /**
  * Created by coyove on 2017/3/8.
  */
-public class Wall extends Element {
-    protected IfcWall wall;
+public class Column extends Element {
+    protected IfcColumn column;
 
-    public Wall(IfcWall wall) {
-        this.wall = wall;
+    public Column(IfcColumn column) {
+        this.column = column;
     }
 
     public List<Vector> getGeometry() {
-        for (IfcRepresentation rep : wall.getRepresentation().getRepresentations()) {
+        for (IfcRepresentation rep : column.getRepresentation().getRepresentations()) {
             for (IfcRepresentationItem item : rep.getItems()) {
                 if (item instanceof IfcExtrudedAreaSolid) {
                     IfcProfileDef profile = ((IfcExtrudedAreaSolid) item).getSweptArea();
                     Matrix.Transform m = Position.calcPlacementTransform(
                             ((IfcExtrudedAreaSolid) item).getPosition());
 
-                    Matrix.Transform m2 = Position.calcPlacementTransform(this.wall.getObjectPlacement());
+                    Matrix.Transform m2 = Position.calcPlacementTransform(column.getObjectPlacement());
 
                     List<Vector> points = Profile.interpolateCurveProfile(profile);
                     for (int i = 0; i < points.size(); i++) {

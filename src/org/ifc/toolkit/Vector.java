@@ -24,7 +24,7 @@ public class Vector extends Point {
 
     public Vector cross(Vector right) {
         return new Vector(
-                this.y * right.z - this.z * right.z,
+                this.y * right.z - this.z * right.y,
                 this.z * right.x - this.x * right.z,
                 this.x * right.y - this.y * right.x
                 );
@@ -89,5 +89,12 @@ public class Vector extends Point {
             return new Vector(list.get(0).value, list.get(1).value, list.get(2).value);
 
         throw new UnsupportedOperationException();
+    }
+
+    public static Vector from(IfcDirection direction, double dx, double dy, double dz) {
+        if (direction == null)
+            return new Vector(dx, dy, dz);
+
+        return from(direction);
     }
 }

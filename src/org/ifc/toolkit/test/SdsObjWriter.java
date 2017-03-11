@@ -38,17 +38,20 @@ public class SdsObjWriter {
     public void write(String fn) {
         try {
             FileOutputStream out = new FileOutputStream(fn);
-            for (Vector v : vectors)
+            for (Vector v : vectors) {
                 out.write(("v " + v.x + " " + v.y + " " + v.z + "\n").getBytes());
+            }
 
             for (Face face : faces) {
-                out.write('f');
+                if (face.points.size() >= 3) {
+                    out.write('f');
 
-                for (Long idx : face.points) {
-                    out.write((" " + idx.toString()).getBytes());
+                    for (Long idx : face.points) {
+                        out.write((" " + idx.toString()).getBytes());
+                    }
+
+                    out.write('\n');
                 }
-
-                out.write('\n');
             }
         } catch (Exception e) {
             // nothing

@@ -327,7 +327,11 @@ public class IfcModel {
     }
 
     public Element getElement(int iid) {
-        return new Wall(((IfcWall) entityInstanceNameMap.get(iid)));
+        ClassInterface instance = entityInstanceNameMap.get(iid);
+        if (instance instanceof IfcWall)
+            return new Wall((IfcWall) instance);
+
+        return null;
     }
 
     /**

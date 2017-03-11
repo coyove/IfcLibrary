@@ -43,8 +43,12 @@ public class Matrix {
         public Transform(DenseMatrix64F r, Vector t, double s) {
             this();
 
-            r.reshape(4, 4, true);
-            r.unsafe_set(3, 3, 1);
+            DenseMatrix64F rotate = r.numRows == 4 && r.numCols == 4 ? r :
+                    new DenseMatrix64F(4, 4, true,
+                            r.unsafe_get(0, 0), r.unsafe_get(0, 1), r.unsafe_get(0, 2), 0,
+                            r.unsafe_get(1, 0), r.unsafe_get(1, 1), r.unsafe_get(1, 2), 0,
+                            r.unsafe_get(2, 0), r.unsafe_get(2, 1), r.unsafe_get(2, 2), 0,
+                            0, 0, 0, 1);
 
             DenseMatrix64F translate = new DenseMatrix64F(4, 4, true,
                     1, 0, 0, t.x,
@@ -58,7 +62,7 @@ public class Matrix {
                     0, 0, s, 0,
                     0, 0, 0, 1);
 
-            CommonOps.mult(translate, r, swap);
+            CommonOps.mult(translate, rotate, swap);
             CommonOps.mult(swap, scale, matrix);
         }
 

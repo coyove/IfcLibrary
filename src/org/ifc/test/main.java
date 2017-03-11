@@ -1,10 +1,14 @@
 package org.ifc.test;
 
+import org.ifc.ifc2x3tc1.ClassInterface;
+import org.ifc.ifc2x3tc1.IfcColumn;
+import org.ifc.ifc2x3tc1.IfcWall;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.step.parser.util.UnsafeDoubleParser;
 import org.ifc.toolkit.Matrix;
 import org.ifc.toolkit.Point;
 import org.ifc.toolkit.Vector;
+import org.ifc.toolkit.element.Column;
 import org.ifc.toolkit.element.Wall;
 import org.ifc.toolkit.test.SdsObjWriter;
 import org.ifc.toolkit.util.Rasterizer;
@@ -19,7 +23,7 @@ import java.util.List;
  */
 public class main {
     public static void main(String[] args) throws Exception {
-//        SdsObjWriter obj = new SdsObjWriter();
+        SdsObjWriter obj = new SdsObjWriter();
 //        obj.addFace(new ArrayList<Vector>() {{
 //            add(new Vector(1, 0, 0));
 //            add(new Vector(0, 1, 0));
@@ -31,22 +35,26 @@ public class main {
 
         IfcModel model = new IfcModel();
         long start = System.currentTimeMillis();
-        model.readStepFile(new FileInputStream("C:\\Users\\coyove\\Dropbox\\ifc\\hw.ifc"));
+        model.readStepFile(new FileInputStream("C:\\Users\\zezhong\\Dropbox\\ifc\\hw.ifc"));
         System.out.println(model.getIfcObjects().size());
 //        System.out.println(model.getFile_Schema().getStepLine());
         System.out.println(System.currentTimeMillis() - start);
 
-//        for (ClassInterface ci : model.getIfcObjects()) {
-//            if (ci instanceof IfcRelAssignsToGroup) {
-//                for (IfcObjectDefinition iod : ((IfcRelAssignsToGroup) ci).getRelatedObjects()) {
-//                    iod.getName()
-//                }
-//            }
-//        }
-
-        for (Vector v : ((Wall) model.getElement(3529)).getGeometry()) {
-            System.out.println(v);
+        for (ClassInterface ci : model.getIfcObjects()) {
+            if (ci instanceof IfcWall) {
+                Wall wall = new Wall((IfcWall) ci);
+                List<Vector> vecs = wall.getGeometry();
+                if (vecs != null)
+                    obj.addFace(vecs);
+            } else if (ci instanceof IfcColumn) {
+                Column wall = new Column((IfcColumn) ci);
+                List<Vector> vecs = wall.getGeometry();
+                if (vecs != null)
+                    obj.addFace(vecs);
+            }
         }
+
+        obj.write("test.obj");
 
         System.out.println(System.currentTimeMillis() - start);
     }

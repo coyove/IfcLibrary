@@ -16,50 +16,44 @@ public class Profile extends Element {
     public static class WrongProfileType extends RuntimeException {
     }
 
-    protected IfcProfileDef profile;
-
-    public Profile(IfcProfileDef def) {
-        this.profile = def;
-    }
-
-    public List<Vector> interpolateCurveProfile() throws WrongProfileType {
+    public static List<Vector> interpolateCurveProfile(IfcProfileDef profile) throws WrongProfileType {
 //        if (this.profile.getProfileType().value == IfcProfileTypeEnum.IfcProfileTypeEnum_internal.AREA)
 //            throw new WrongProfileType();
 
         List<Vector> points = new ArrayList<Vector>();
 
-        if (this.profile instanceof IfcParameterizedProfileDef) {
-            if (this.profile instanceof IfcAsymmetricIShapeProfileDef) {
+        if (profile instanceof IfcParameterizedProfileDef) {
+            if (profile instanceof IfcAsymmetricIShapeProfileDef) {
 //                IfcAsymmetricIShapeProfileDef profile = ((IfcAsymmetricIShapeProfileDef) this.profile);
                 // profile.getTopFlangeFilletRadius()
-            } else if (this.profile instanceof IfcIShapeProfileDef) {
+            } else if (profile instanceof IfcIShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcLShapeProfileDef) {
+            } else if (profile instanceof IfcLShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcUShapeProfileDef) {
+            } else if (profile instanceof IfcUShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcCShapeProfileDef) {
+            } else if (profile instanceof IfcCShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcZShapeProfileDef) {
+            } else if (profile instanceof IfcZShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcTShapeProfileDef) {
+            } else if (profile instanceof IfcTShapeProfileDef) {
 
-            } else if (this.profile instanceof IfcRectangleProfileDef) {
-                IfcRectangleProfileDef profile = ((IfcRectangleProfileDef) this.profile);
-                Matrix.Transform t = Position.calcPlacementTransform(profile.getPosition());
-                double width = profile.getXDim().value;
-                double height = profile.getYDim().value;
+            } else if (profile instanceof IfcRectangleProfileDef) {
+                IfcRectangleProfileDef _profile = (IfcRectangleProfileDef) profile;
+                Matrix.Transform t = Position.calcPlacementTransform(_profile.getPosition());
+                double width = _profile.getXDim().value;
+                double height = _profile.getYDim().value;
 
-                points.add(t.transform(new Vector(width / 2, height / 2)));
-                points.add(t.transform(new Vector(-width / 2, height / 2)));
-                points.add(t.transform(new Vector(-width / 2, -height / 2)));
-                points.add(t.transform(new Vector(width / 2, -height / 2)));
+                points.add((new Vector(width / 2, height / 2)).transform(t));
+                points.add((new Vector(-width / 2, height / 2)).transform(t));
+                points.add((new Vector(-width / 2, -height / 2)).transform(t));
+                points.add((new Vector(width / 2, -height / 2)).transform(t));
             }
-        } else if (this.profile instanceof IfcArbitraryOpenProfileDef) {
-            ((IfcArbitraryOpenProfileDef) this.profile).getCurve();
-        } else if (this.profile instanceof IfcArbitraryClosedProfileDef) {
+        } else if (profile instanceof IfcArbitraryOpenProfileDef) {
+            ((IfcArbitraryOpenProfileDef) profile).getCurve();
+        } else if (profile instanceof IfcArbitraryClosedProfileDef) {
 
-        } else if (this.profile instanceof IfcCompositeProfileDef) {
+        } else if (profile instanceof IfcCompositeProfileDef) {
 
         } else { // IfcDerivedProfileDef
         }
