@@ -25,6 +25,49 @@ public class Position {
         }
     }
 
+    public static Matrix.Transform calcPlacementTransform(IfcCartesianTransformationOperator op) {
+        Vector oOrigin = Vector.from(op.getLocalOrigin());
+        oOrigin.clamp(-1.0E12D, 1.0E12D);
+
+        Vector xDir = Vector.from(op.getAxis1(), 1, 0, 0);
+        Vector yDir = Vector.from(op.getAxis2(), 0, 1, 0);
+        Vector zDir = new Vector(0, 0, 1);
+
+        double scaleX = 1.0D;
+        double scaleY = 1.0D;
+        double scaleZ = 1.0D;
+
+        DOUBLE scale = op.getScale();
+        if (scale != null) scaleZ = scaleY = scaleX = scale.value;
+
+        if ((op instanceof IfcCartesianTransformationOperator2DnonUniform))
+        {
+            DOUBLE scale2 = ((IfcCartesianTransformationOperator2DnonUniform) op).getScale2();
+            if (scale2 != null) scaleY = scale2.value;
+        }
+
+        if ((op instanceof IfcCartesianTransformationOperator3D))
+        {
+            IfcDirection oZAxis = ((IfcCartesianTransformationOperator3D) op).getAxis3();
+            if (oZAxis != null) zDir = Vector.from(oZAxis);
+        }
+
+        if ((op instanceof IfcCartesianTransformationOperator3DnonUniform))
+        {
+            IfcCartesianTransformationOperator3DnonUniform ct =
+                    (IfcCartesianTransformationOperator3DnonUniform) op;
+
+            DOUBLE scale2 = ct.getScale2();
+            if (scale2 != null) scaleY = scale2.value;
+
+            DOUBLE scale3 = ct.getScale3();
+            if (scale3 != null) scaleZ = scale3.value;
+        }
+
+        DenseMatrix64F rotate = Matrix.getRotationMatrix(xDir, yDir, zDir);
+        return new Matrix.Transform(rotate, oOrigin, scaleX, scaleY, scaleZ);
+    }
+
     public static Matrix.Transform calcPlacementTransform(IfcAxis2Placement p) {
         if (p instanceof IfcAxis2Placement2D) {
             Vector loc = Vector.from(((IfcAxis2Placement2D) p).getLocation());

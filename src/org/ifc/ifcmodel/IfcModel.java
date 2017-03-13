@@ -6,19 +6,14 @@ import org.ifc.step.parser.IfcStepParser;
 import org.ifc.step.parser.StaticStepParser;
 import org.ifc.step.parser.util.ProgressEvent;
 import org.ifc.step.parser.util.StepParserProgressListener;
-import org.ifc.toolkit.element.Element;
-import org.ifc.toolkit.element.Wall;
+import org.ifc.toolkit.base.Element;
+import org.ifc.toolkit.element.*;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -42,6 +37,14 @@ public class IfcModel {
     private File_Name file_Name = null;
     private File_Description file_Description = null;
     private File_Schema file_Schema = null;
+
+    private final static Map<Class, Class> CLASS_MAPPINGS = new HashMap<Class, Class>() {{
+        put(IfcWall.class, Wall.class);
+        put(IfcColumn.class, Column.class);
+        put(IfcSlab.class, Slab.class);
+        put(IfcBeam.class, Beam.class);
+        put(IfcBuildingElementProxy.class, GeneralObject.class);
+    }};
 
     /**
      * Constructs a new IfcModel Object using standard parameters.
@@ -508,24 +511,46 @@ public class IfcModel {
      * contained in the model
      */
     @SuppressWarnings("unchecked")
-    public <T> Collection<T> getCollection(Class<T> type) {
+    public <T> Collection<T> getElements(Class<T>... type) {
         HashMap<Class<?>, HashSet<Object>> typeCacheMap = null;
         if (isTypeCacheEnabled) {
             if (typeCache == null || typeCache.get() == null) {
                 typeCacheMap = new HashMap<Class<?>, HashSet<Object>>();
                 typeCache = new SoftReference<HashMap<Class<?>, HashSet<Object>>>(typeCacheMap);
             }
+
             typeCacheMap = typeCache.get();
-            if (typeCacheMap != null)
-                if (typeCacheMap.get(type) != null) return (Collection<T>) typeCacheMap.get(type).clone();
-        }
-        HashSet<Object> typeSet = new HashSet<Object>();
-        for (Object currentObject : entityInstanceNameMap.values()) {
-            if (type.isInstance(currentObject)) {
-                typeSet.add(currentObject);
+            if (typeCacheMap != null) {
+                HashSet<T> ret = new HashSet<T>();
+
+                for (Class<T> cls : type) {
+                    if (typeCacheMap.get(cls) != null)
+                        ret.addAll((Collection<T>) typeCacheMap.get(cls).clone());
+                }
+
+                if (ret.size() > 0) return ret;
             }
         }
+
+        Map<Class, HashSet<ClassInterface>> typeMap = new HashMap<Class, HashSet<ClassInterface>>();
+        HashSet<Class> clazz = new HashSet<Class>();
+        for (Class<T> cls : type) {
+            HashSet<Class> c = Element.CLASS_MAPPINGS.get(cls);
+            if (c != null) {
+                clazz.addAll(c);
+                typeMap.put(cls, new HashSet<ClassInterface>());
+            }
+        }
+
+        for (ClassInterface object : entityInstanceNameMap.values()) {
+            Class objClass = object.getClass();
+            if (clazz.contains(objClass)) {
+                typeMap.get().add(object);
+            }
+        }
+
         if (isTypeCacheEnabled) typeCacheMap.put(type, typeSet);
+
         return (Collection<T>) typeSet.clone();
     }
 
@@ -550,8 +575,10 @@ public class IfcModel {
 
     private void finishReadStepFile(IfcStepParser parser) {
         entityInstanceNameMap = new TreeMap<Integer, ClassInterface>();
+
         for (int idx : parser.getEntityInstanceNameMap().indexes()) {
-            entityInstanceNameMap.put(idx, parser.getEntityInstanceNameMap().get(idx));
+            ClassInterface ci = parser.getEntityInstanceNameMap().get(idx);
+            entityInstanceNameMap.put(idx, ci);
         }
 
         this.file_Description = parser.getFile_Description();
@@ -566,88 +593,6 @@ public class IfcModel {
     }
 
     /**
-     * This method reads an IFCZIP file from the specified {@link File} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     *
-     * @param file the file to be read from
-     * @throws Exception if an IO failure occurs
-     */
-    public void readIfcZipFile(File file) throws Exception {
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readIfcZipFile(file);
-//		finishReadStepFile(parser);
-    }
-
-    /**
-     * This method reads an IFCZIP file from the specified {@link URL} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     * @param url the web address to be read from
-     * @throws Exception if an IO failure occurs
-     */
-//	public void readIfcZipFile(URL url) throws Exception
-//	{
-//		URLFileCache urlFileCache = new URLFileCache();
-//		urlFileCache.loadZipFile(url.openStream());
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readStepFile(urlFileCache);
-//		finishReadStepFile(parser);
-//	}
-
-    /**
-     * This method reads an IFCZIP file from the specified {@link InputStream} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     * @param inputStream the data source to be read from
-     * @throws Exception if an IO failure occurs
-     */
-//	public void readIfcZipFile(InputStream inputStream) throws Exception
-//	{
-//		URLFileCache urlFileCache = new URLFileCache();
-//		urlFileCache.loadZipFile(inputStream);
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readStepFile(urlFileCache);
-//		finishReadStepFile(parser);
-//	}
-
-    /**
-     * This method reads an IFC STEP file from the specified {@link URLFileCache} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     * @param urlFileCache the cached IFC STEP file to be read from
-     * @throws Exception if an IO failure occurs
-     */
-//	public void readStepFile(URLFileCache urlFileCache) throws Exception
-//	{
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readStepFile(urlFileCache);
-//		finishReadStepFile(parser);
-//	}
-
-    /**
-     * This method reads an IFC STEP file from the specified {@link URL} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     * @param url the web address to be read from
-     * @throws Exception if an IO failure occurs
-     */
-//	public void readStepFile(URL url) throws Exception
-//	{
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readStepFile(url);
-//		finishReadStepFile(parser);
-//	}
-
-    /**
-     * This method reads an IFC STEP file from the specified {@link File} and initializes the described Objects.
-     * Those objects can be accessed and manipulated using the IfcModel's methods.
-     * @param file the file to be read from
-     * @throws Exception if an IO failure occurs
-     */
-//	public void readStepFile(File file) throws Exception
-//	{
-//		IfcStepParser parser = initReadStepFile();
-//		parser.readStepFile(file);
-//		finishReadStepFile(parser);
-//	}
-
-    /**
      * This method reads an IFC STEP file from the specified {@link InputStream} and initializes the described Objects.
      * Those objects can be accessed and manipulated using the IfcModel's methods.
      *
@@ -658,76 +603,6 @@ public class IfcModel {
         IfcStepParser parser = initReadStepFile();
         parser.readStepFile(new BufferedReader(new InputStreamReader(is, "UTF-8")));
         finishReadStepFile(parser);
-    }
-
-    /**
-     * Internal method to write an IFCZIP file to the specified {@link ZipOutputStream}.
-     *
-     * @param zipOutputStream the data sink
-     * @param fileName        the file name used for the STEP file ZIP entry
-     * @param filePath        the path to the file in the file system (used in IFC header)
-     * @throws IOException if an IO failure occurs
-     */
-    private void writeIfcZipFile(ZipOutputStream zipOutputStream, String fileName, String filePath) throws IOException {
-        if (!fileName.endsWith(".ifc"))
-            fileName += ".ifc";
-        ZipEntry zipEntry = new ZipEntry(fileName);
-        zipOutputStream.putNextEntry(zipEntry);
-        writeStepFile(zipOutputStream, filePath);
-    }
-
-    /**
-     * Writes an IFCZIP file that represents the IfcModel's content to the specified {@link File}.
-     *
-     * @param file the file where the IFCZIP file should be written to
-     * @throws IOException if an IO failure occurs
-     */
-    public void writeIfcZipFile(File file) throws IOException {
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
-        String fileName = file.getName().replace(".zip", "").replace(".ifczip", "");
-        String filePath = file.getAbsolutePath();
-        writeIfcZipFile(zipOutputStream, fileName, filePath);
-    }
-
-    /**
-     * Writes an IFCZIP file that represents the IfcModel's content to the specified {@link URL}.
-     *
-     * @param url the web address where the IFCZIP file should be written to
-     * @throws IOException if an IO failure occurs
-     */
-    public void writeIfcZipFile(URL url) throws IOException {
-        ZipOutputStream zipOutputStream = new ZipOutputStream(url.openConnection().getOutputStream());
-        String fileName = "file";
-        String filePath = "file";
-        writeIfcZipFile(zipOutputStream, fileName, filePath);
-    }
-
-    /**
-     * Writes an IFCZIP file that represents the IfcModel's content to the specified {@link OutputStream}.
-     *
-     * @param outputStream the data sink where the IFCZIP file should be written to
-     * @throws IOException if an IO failure occurs
-     */
-    public void writeIfcZipFile(OutputStream outputStream) throws IOException {
-        ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-        String fileName = "file";
-        String filePath = "file";
-        writeIfcZipFile(zipOutputStream, fileName, filePath);
-    }
-
-    /**
-     * Writes an IFCZIP file that represents the IfcModel's content to the specified {@link File}.
-     *
-     * @param ifcZipFile      the file where the IFCZIP file should be written to
-     * @param ifcStepFileName the file name used for the STEP file ZIP entry
-     * @throws IOException if an IO failure occurs
-     * @deprecated use instead one of {@link #writeIfcZipFile(File)}, {@link #writeIfcZipFile(URL)} or {@link #writeIfcZipFile(OutputStream)}
-     */
-    @Deprecated
-    public void writeIfcZipStepfile(File ifcZipFile, String ifcStepFileName) throws IOException {
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(ifcZipFile));
-        String filePath = ifcZipFile.getAbsolutePath();
-        writeIfcZipFile(zipOutputStream, ifcStepFileName, filePath);
     }
 
     /**
@@ -812,29 +687,6 @@ public class IfcModel {
         outputStream.write("END-ISO-10303-21;\n\n".getBytes());
         outputStream.flush();
         outputStream.close();
-    }
-
-
-    /**
-     * Writes an IFC STEP file that represents the IfcModel's content to the specified {@link File}.
-     *
-     * @param file the file where the IFC STEP file should be written to
-     * @throws IOException if an IO failure occurs
-     */
-    public void writeStepfile(File file) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        writeStepFile(fileOutputStream, file.getAbsolutePath());
-    }
-
-    /**
-     * Writes an IFC STEP file that represents the IfcModel's content to the specified {@link URL}.
-     *
-     * @param url the web address where the IFC STEP file should be written to
-     * @throws IOException if an IO failure occurs
-     */
-    public void writeStepfile(URL url) throws IOException {
-        OutputStream outputStream = url.openConnection().getOutputStream();
-        writeStepFile(outputStream, "file.ifc");
     }
 
     /**

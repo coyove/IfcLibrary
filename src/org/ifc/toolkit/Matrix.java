@@ -40,9 +40,7 @@ public class Matrix {
             matrix.unsafe_set(3, 3, 1);
         }
 
-        public Transform(DenseMatrix64F r, Vector t, double s) {
-            this();
-
+        private DenseMatrix64F checkRotationMatrix(DenseMatrix64F r) {
             DenseMatrix64F rotate = r.numRows == 4 && r.numCols == 4 ? r :
                     new DenseMatrix64F(4, 4, true,
                             r.unsafe_get(0, 0), r.unsafe_get(0, 1), r.unsafe_get(0, 2), 0,
@@ -50,11 +48,24 @@ public class Matrix {
                             r.unsafe_get(2, 0), r.unsafe_get(2, 1), r.unsafe_get(2, 2), 0,
                             0, 0, 0, 1);
 
-            DenseMatrix64F translate = new DenseMatrix64F(4, 4, true,
+            if (rotate.unsafe_get(3, 3) != 1.0) rotate.unsafe_set(3, 3, 1);
+            return rotate;
+        }
+
+        private DenseMatrix64F makeTranslationMatrix(Vector t) {
+            return new DenseMatrix64F(4, 4, true,
                     1, 0, 0, t.x,
                     0, 1, 0, t.y,
                     0, 0, 1, t.z,
                     0, 0, 0, 1);
+        }
+
+        public Transform(DenseMatrix64F r, Vector t, double s) {
+            this();
+
+            DenseMatrix64F rotate = checkRotationMatrix(r);
+
+            DenseMatrix64F translate = makeTranslationMatrix(t);
 
             DenseMatrix64F scale = new DenseMatrix64F(4, 4, true,
                     s, 0, 0, 0,
@@ -66,19 +77,28 @@ public class Matrix {
             CommonOps.mult(swap, scale, matrix);
         }
 
+        public Transform(DenseMatrix64F r, Vector t, double sx, double sy, double sz) {
+            this();
+
+            DenseMatrix64F rotate = checkRotationMatrix(r);
+
+            DenseMatrix64F translate = makeTranslationMatrix(t);
+
+            DenseMatrix64F scale = new DenseMatrix64F(4, 4, true,
+                    sx, 0, 0, 0,
+                    0, sy, 0, 0,
+                    0, 0, sz, 0,
+                    0, 0, 0, 1);
+
+            CommonOps.mult(translate, rotate, swap);
+            CommonOps.mult(swap, scale, matrix);
+        }
+
         public synchronized void transform(Transform t) {
             CommonOps.mult(t.matrix, this.matrix, swap);
             DenseMatrix64F tmp = matrix;
             matrix = swap;
             swap = tmp;
-        }
-
-        public synchronized Vector transform(Vector v) {
-            DenseMatrix64F c = new DenseMatrix64F(4, 1);
-            DenseMatrix64F b = new DenseMatrix64F(4, 1, true, v.x, v.y, v.z, 1);
-
-            CommonOps.mult(this.matrix, b, c);
-            return v;
         }
     }
 

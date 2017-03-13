@@ -10,18 +10,18 @@ import java.util.List;
 /**
  * Created by coyove on 2017/3/8.
  */
-public class Wall extends Element implements Meshable {
-    protected IfcWall wall;
+public class Beam extends Element implements Meshable {
+    protected IfcBeam beam;
 
-    public Wall(IfcWall wall) {
-        this.wall = wall;
+    public Beam(IfcBeam wall) {
+        this.beam = wall;
     }
 
     public List<Mesh> getGeometry() {
-        return Representation.getMesh(this.wall);
+        return Representation.getMesh(this.beam);
     }
 
     public List<Mesh> getLocalGeometry() {
-        return Representation.getMesh(this.wall.getRepresentation().getRepresentations());
+        return Representation.getMesh(this.beam.getRepresentation().getRepresentations());
     }
 }

@@ -3,7 +3,7 @@ package org.ifc.toolkit;
 import org.ifc.ifc2x3tc1.IfcCartesianPoint;
 import org.ifc.ifc2x3tc1.IfcLengthMeasure;
 import org.ifc.ifc2x3tc1.LIST;
-import org.ifc.toolkit.element.Element;
+import org.ifc.toolkit.base.Element;
 
 /**
  * Created by coyove on 2017/3/8.

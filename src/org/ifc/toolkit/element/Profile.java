@@ -2,9 +2,9 @@ package org.ifc.toolkit.element;
 
 import org.ifc.ifc2x3tc1.*;
 import org.ifc.toolkit.Matrix;
-import org.ifc.toolkit.Point;
 import org.ifc.toolkit.Position;
 import org.ifc.toolkit.Vector;
+import org.ifc.toolkit.base.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +44,15 @@ public class Profile extends Element {
                 double width = _profile.getXDim().value;
                 double height = _profile.getYDim().value;
 
-                points.add((new Vector(width / 2, height / 2)).transform(t));
-                points.add((new Vector(-width / 2, height / 2)).transform(t));
-                points.add((new Vector(-width / 2, -height / 2)).transform(t));
-                points.add((new Vector(width / 2, -height / 2)).transform(t));
+                points.add((new Vector(width / 2, height / 2)).transformI(t));
+                points.add((new Vector(-width / 2, height / 2)).transformI(t));
+                points.add((new Vector(-width / 2, -height / 2)).transformI(t));
+                points.add((new Vector(width / 2, -height / 2)).transformI(t));
             }
         } else if (profile instanceof IfcArbitraryOpenProfileDef) {
             ((IfcArbitraryOpenProfileDef) profile).getCurve();
         } else if (profile instanceof IfcArbitraryClosedProfileDef) {
-
+            return Curve.interpolateCurve(((IfcArbitraryClosedProfileDef) profile).getOuterCurve());
         } else if (profile instanceof IfcCompositeProfileDef) {
 
         } else { // IfcDerivedProfileDef

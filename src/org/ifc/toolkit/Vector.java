@@ -4,11 +4,14 @@ import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 import org.ifc.ifc2x3tc1.*;
 
+import java.util.List;
+
 /**
  * Created by coyove on 2017/3/9.
  */
 public class Vector extends Point {
-    public Vector() {}
+    public Vector() {
+    }
 
     public Vector(double x, double y) {
         super(x, y);
@@ -27,7 +30,41 @@ public class Vector extends Point {
                 this.y * right.z - this.z * right.y,
                 this.z * right.x - this.x * right.z,
                 this.x * right.y - this.y * right.x
-                );
+        );
+    }
+
+    public Vector crossI(Vector right) {
+        double _x = this.y * right.z - this.z * right.y;
+        double _y = this.z * right.x - this.x * right.z;
+        double _z = this.x * right.y - this.y * right.x;
+
+        this.x = _x;
+        this.y = _y;
+        this.z = _z;
+
+        return this;
+    }
+
+    public Vector mulI(double l) {
+        x *= l;
+        y *= l;
+        z *= l;
+        return this;
+    }
+
+    public Vector mul(double l) {
+        return new Vector(x * l, y * l, z * l);
+    }
+
+    public Vector addI(Vector r) {
+        x += r.x;
+        y += r.y;
+        z += r.z;
+        return this;
+    }
+
+    public Vector add(Vector r) {
+        return new Vector(x + r.x, y + r.y, z + r.z);
     }
 
     public double magnitude() {
@@ -43,7 +80,7 @@ public class Vector extends Point {
         z /= m;
     }
 
-    public Vector transform(Matrix.Transform m) {
+    public Vector transformI(Matrix.Transform m) {
         DenseMatrix64F c = new DenseMatrix64F(4, 1);
         DenseMatrix64F b = new DenseMatrix64F(4, 1, true, x, y, z, 1);
 
@@ -53,6 +90,28 @@ public class Vector extends Point {
         z = c.unsafe_get(2, 0);
 
         return this;
+    }
+
+    public Vector transform(Matrix.Transform m) {
+        DenseMatrix64F c = new DenseMatrix64F(4, 1);
+        DenseMatrix64F b = new DenseMatrix64F(4, 1, true, x, y, z, 1);
+
+        CommonOps.mult(m.matrix, b, c);
+        return new Vector(c.unsafe_get(0, 0),
+                c.unsafe_get(1, 0),
+                c.unsafe_get(2, 0));
+    }
+
+    @Override
+    public Vector clone() {
+        return new Vector(x, y, z);
+    }
+
+    public static List<Vector> transformI(List<Vector> vs, Matrix.Transform m) {
+        for (int i = 0; i < vs.size(); i++)
+            vs.set(i, vs.get(i).transformI(m));
+
+        return vs;
     }
 
     public static Vector from(IfcCartesianPoint point) {
@@ -71,6 +130,17 @@ public class Vector extends Point {
             return new Vector(list.get(0).value, list.get(1).value, list.get(2).value);
 
         throw new UnsupportedOperationException();
+    }
+
+    public static Vector from(IfcVector v) {
+        if (v == null)
+            return new Vector();
+
+        double mag = v.getMagnitude().value;
+        Vector ret = from(v.getOrientation());
+        ret.mulI(mag);
+
+        return ret;
     }
 
     public static Vector from(IfcDirection direction) {
