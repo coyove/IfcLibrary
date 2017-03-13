@@ -69,7 +69,8 @@ public class Representation {
                             }
                         }
                     }
-                    mesh.transform(matrix);
+
+                    if (matrix != null) mesh.transform(matrix);
                     meshes.add(mesh);
                 }
             } else if (item instanceof IfcMappedItem) {
@@ -77,8 +78,10 @@ public class Representation {
                 Matrix.Transform op = Position
                         .calcPlacementTransform(((IfcMappedItem) item).getMappingTarget());
 
-                for (Mesh mesh : source)
+                for (Mesh mesh : source) {
                     mesh.transform(op);
+                    if (matrix != null) mesh.transform(matrix);
+                }
 
                 meshes.addAll(source);
             }

@@ -1,21 +1,21 @@
 package org.ifc.toolkit.element;
 
-import org.ifc.ifc2x3tc1.IfcBuildingElementProxy;
-import org.ifc.ifc2x3tc1.IfcBuildingElementProxyTypeEnum;
+import org.ifc.ifc2x3tc1.IfcBuildingStorey;
 import org.ifc.ifc2x3tc1.IfcProduct;
+import org.ifc.ifc2x3tc1.IfcSpace;
 import org.ifc.toolkit.Mesh;
 import org.ifc.toolkit.Representation;
-import org.ifc.toolkit.base.Element;
 import org.ifc.toolkit.base.Meshable;
+import org.ifc.toolkit.base.SpatialElement;
 
 import java.util.List;
 
 /**
- * Created by zezhong on 2017/3/12.
+ * Created by coyove on 2017/3/13.
  */
-public class GeneralObject extends Element implements Meshable {
-    public GeneralObject(IfcBuildingElementProxy proxy) {
-        underlay = proxy;
+public class Space extends SpatialElement implements Meshable {
+    public Space(IfcSpace space) {
+        underlay = space;
     }
 
     public List<Mesh> getGeometry() {

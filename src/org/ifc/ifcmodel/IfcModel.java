@@ -11,11 +11,9 @@ import org.ifc.toolkit.element.*;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
-import java.net.URL;
+import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Copyright: CC BY-NC-SA 3.0 DE (cc) 2013 Eike Tauscher and Michael Theiler<br><br>
@@ -40,10 +38,16 @@ public class IfcModel {
 
     private final static Map<Class, Class> CLASS_MAPPINGS = new HashMap<Class, Class>() {{
         put(IfcWall.class, Wall.class);
+        put(IfcWallStandardCase.class, Wall.class);
         put(IfcColumn.class, Column.class);
         put(IfcSlab.class, Slab.class);
         put(IfcBeam.class, Beam.class);
+        put(IfcWindow.class, Window.class);
+        put(IfcBuilding.class, Building.class);
+        put(IfcBuildingStorey.class, Storey.class);
+        put(IfcSpace.class, Space.class);
         put(IfcBuildingElementProxy.class, GeneralObject.class);
+        put(IfcProject.class, Project.class);
     }};
 
     /**
@@ -253,73 +257,15 @@ public class IfcModel {
         progressListeners = null;
     }
 
-
-    /**
-     * Returns <code>true</code> if this model contains the specified object.
-     *
-     * @param ifcObject object whose presence in this model is to be tested
-     * @return <code>true</code> if this model contains the specified object
-     */
-    public boolean containsIfcObject(ClassInterface ifcObject) {
-        return entityInstanceNameMap.values().contains(ifcObject);
-    }
-
-    /**
-     * Returns <code>true</code> if this model contains a mapping for the specified global unique ID.
-     *
-     * @param globalUniqueId The global unique ID whose presence in this model is to be tested
-     * @return <code>true</code> if this model contains a mapping for the specified global unique ID.
-     */
-    public boolean containsIfcObject(String globalUniqueId) {
-        Collection<?> values = null;
-        if (isTypeCacheEnabled) values = getCollection(IfcRoot.class);
-        else values = entityInstanceNameMap.values();
-        for (Object ifcObject : values) {
-            if (ifcObject instanceof IfcRoot)
-                if (((IfcRoot) ifcObject).getGlobalId().getDecodedValue().equals(globalUniqueId))
-                    return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * This method returns a map of IFC objects to the corresponding GUIDs. The
-     * key is represented by the IFC objects GUID as String.
-     *
-     * @param globalUniqueIDs the requested GUIDs
-     * @return the corresponding objects as HasMap, where the key is the objects GUID
-     * the value will be null if the requested GUID wasn't found within the model
-     */
-    public HashMap<String, ClassInterface> getIfcObjectsByIDs(
-            Collection<String> globalUniqueIDs) {
-        Collection<?> values = null;
-        if (isTypeCacheEnabled) values = getCollection(IfcRoot.class);
-        else values = entityInstanceNameMap.values();
-        HashMap<String, ClassInterface> ifcObjects = new HashMap<String, ClassInterface>();
-        // add all IFC Objects to the resulting set where their GUID is requested
-        for (Object ifcObject : values) {
-            if (ifcObject instanceof IfcRoot)
-                if (globalUniqueIDs.contains(((IfcRoot) ifcObject).getGlobalId().getDecodedValue()))
-                    ifcObjects.put(((IfcRoot) ifcObject).getGlobalId().getDecodedValue(), (ClassInterface) ifcObject);
-        }
-        // add all GUID's with a null value to the resulting set where their GUID's are not present
-        // within the model
-        globalUniqueIDs.retainAll(ifcObjects.keySet());
-        for (String nullIds : globalUniqueIDs)
-            ifcObjects.put(nullIds, null);
-        return ifcObjects;
-    }
-
     /**
      * This method returns an IFC object to the corresponding GUID
      *
      * @param globalUniqueId the GUID
      * @return the corresponding object
      */
-    public ClassInterface getIfcObjectByID(String globalUniqueId) {
+    public ClassInterface getElement(String globalUniqueId) {
         Collection<?> values = null;
-        if (isTypeCacheEnabled) values = getCollection(IfcRoot.class);
+        if (isTypeCacheEnabled) values = getElements(IfcRoot.class);
         else values = entityInstanceNameMap.values();
         for (Object ifcObject : values) {
             if (ifcObject instanceof IfcRoot)
@@ -330,33 +276,22 @@ public class IfcModel {
     }
 
     public Element getElement(int iid) {
-        ClassInterface instance = entityInstanceNameMap.get(iid);
-        if (instance instanceof IfcWall)
-            return new Wall((IfcWall) instance);
+        return castElement(entityInstanceNameMap.get(iid));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Element castElement(ClassInterface instance) {
+        Class<? extends Element> cls = CLASS_MAPPINGS.get(instance.getClass());
+        if (cls != null) {
+            try {
+                Constructor ctor = cls.getConstructor(instance.getClass());
+                return (Element) ctor.newInstance(instance);
+            } catch (Exception e) {
+                // shouldn't happen
+            }
+        }
 
         return null;
-    }
-
-    /**
-     * This method returns an IFC object for the specified entity instance name
-     * (aka step line number)
-     *
-     * @param entityInstanceName the entity instance name
-     * @return the corresponding object or null if no corresponding object
-     * exists
-     */
-    public ClassInterface getIfcObjectByEntityInstanceName(int entityInstanceName) {
-        return entityInstanceNameMap.get(entityInstanceName);
-    }
-
-    /**
-     * This method returns a treeMap with the entity instance names and the
-     * corresponding IFC objects
-     *
-     * @return the treeMap
-     */
-    public TreeMap<Integer, ClassInterface> getIfcObjectsSortedByEntityInstanceName() {
-        return new TreeMap<Integer, ClassInterface>(entityInstanceNameMap);
     }
 
     /**
@@ -511,8 +446,9 @@ public class IfcModel {
      * contained in the model
      */
     @SuppressWarnings("unchecked")
-    public <T> Collection<T> getElements(Class<T>... type) {
+    public <T> Collection<T> getElements(Class<T> type) {
         HashMap<Class<?>, HashSet<Object>> typeCacheMap = null;
+
         if (isTypeCacheEnabled) {
             if (typeCache == null || typeCache.get() == null) {
                 typeCacheMap = new HashMap<Class<?>, HashSet<Object>>();
@@ -520,32 +456,23 @@ public class IfcModel {
             }
 
             typeCacheMap = typeCache.get();
-            if (typeCacheMap != null) {
-                HashSet<T> ret = new HashSet<T>();
-
-                for (Class<T> cls : type) {
-                    if (typeCacheMap.get(cls) != null)
-                        ret.addAll((Collection<T>) typeCacheMap.get(cls).clone());
-                }
-
-                if (ret.size() > 0) return ret;
-            }
+            if (typeCacheMap != null && typeCacheMap.get(type) != null)
+                return (Collection<T>) typeCacheMap.get(type).clone();
         }
 
-        Map<Class, HashSet<ClassInterface>> typeMap = new HashMap<Class, HashSet<ClassInterface>>();
-        HashSet<Class> clazz = new HashSet<Class>();
-        for (Class<T> cls : type) {
-            HashSet<Class> c = Element.CLASS_MAPPINGS.get(cls);
-            if (c != null) {
-                clazz.addAll(c);
-                typeMap.put(cls, new HashSet<ClassInterface>());
-            }
+        HashSet<Object> typeSet = new HashSet<Object>();
+        HashSet<Class> clazz = Element.CLASS_MAPPINGS.get(type);
+        boolean toolkitType = true;
+
+        if (clazz == null) {
+            toolkitType = false;
+            clazz = new HashSet<Class>();
+            clazz.add(type);
         }
 
         for (ClassInterface object : entityInstanceNameMap.values()) {
-            Class objClass = object.getClass();
-            if (clazz.contains(objClass)) {
-                typeMap.get().add(object);
+            if (object != null && clazz.contains(object.getClass())) {
+                typeSet.add(toolkitType ? castElement(object) : object);
             }
         }
 
@@ -708,22 +635,6 @@ public class IfcModel {
     }
 
     /**
-     * This method returns the IfcProject of the IfcModel.
-     *
-     * @return the IfcProject
-     * @throws IllegalArgumentException if more than one IfcProject will be found in the model.
-     */
-    public IfcProject getIfcProject() throws IllegalArgumentException {
-        Collection<IfcProject> projects = getCollection(IfcProject.class);
-        if (projects != null && projects.size() > 0) {
-            if (projects.size() > 1) throw new IllegalArgumentException(
-                    "More than one IfcProject detected!");
-            return projects.iterator().next();
-        }
-        return null;
-    }
-
-    /**
      * This method generates a UUID and compresses it to a 22 character long
      * String according to the algorithm given in the IFC documentation.
      *
@@ -738,7 +649,9 @@ public class IfcModel {
      * sets an IfcProject and all necessary classes related to it.
      */
     public void checkAndSetMinimumRequirements() {
-        if (getIfcProject() != null) return;
+        Collection<IfcProject> projects = getElements(IfcProject.class);
+        // It is end user's responsibility to check the number of IfcProjects
+        if (projects != null && projects.size() > 0) return;
 
         ArrayList<ClassInterface> newObjects = new ArrayList<ClassInterface>();
 

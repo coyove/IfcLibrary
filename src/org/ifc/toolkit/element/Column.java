@@ -11,17 +11,15 @@ import java.util.List;
  * Created by coyove on 2017/3/8.
  */
 public class Column extends Element implements Meshable {
-    protected IfcColumn column;
-
     public Column(IfcColumn column) {
-        this.column = column;
+        underlay = column;
     }
 
     public List<Mesh> getGeometry() {
-        return Representation.getMesh(this.column);
+        return Representation.getMesh((IfcProduct) underlay);
     }
 
     public List<Mesh> getLocalGeometry() {
-        return Representation.getMesh(this.column.getRepresentation().getRepresentations());
+        return Representation.getMesh(((IfcProduct) underlay).getRepresentation().getRepresentations());
     }
 }

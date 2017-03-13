@@ -1,22 +1,20 @@
 package org.ifc.toolkit.element;
 
-import org.ifc.ifc2x3tc1.*;
-import org.ifc.toolkit.*;
-import org.ifc.toolkit.base.Element;
+import org.ifc.ifc2x3tc1.IfcBuilding;
+import org.ifc.ifc2x3tc1.IfcProduct;
+import org.ifc.toolkit.Mesh;
+import org.ifc.toolkit.Representation;
 import org.ifc.toolkit.base.Meshable;
+import org.ifc.toolkit.base.SpatialElement;
 
 import java.util.List;
 
 /**
- * Created by coyove on 2017/3/8.
+ * Created by coyove on 2017/3/13.
  */
-public class Wall extends Element implements Meshable {
-    public Wall(IfcWall wall) {
-        underlay = wall;
-    }
-
-    public Wall(IfcWallStandardCase wall) {
-        underlay = wall;
+public class Building extends SpatialElement implements Meshable {
+    public Building(IfcBuilding building) {
+        underlay = building;
     }
 
     public List<Mesh> getGeometry() {

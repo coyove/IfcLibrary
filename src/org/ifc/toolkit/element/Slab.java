@@ -11,17 +11,15 @@ import java.util.List;
  * Created by coyove on 2017/3/8.
  */
 public class Slab extends Element implements Meshable {
-    protected IfcSlab slab;
-
     public Slab(IfcSlab slab) {
-        this.slab = slab;
+        underlay = slab;
     }
 
     public List<Mesh> getGeometry() {
-        return Representation.getMesh(this.slab);
+        return Representation.getMesh((IfcProduct) underlay);
     }
 
     public List<Mesh> getLocalGeometry() {
-        return Representation.getMesh(this.slab.getRepresentation().getRepresentations());
+        return Representation.getMesh(((IfcProduct) underlay).getRepresentation().getRepresentations());
     }
 }
