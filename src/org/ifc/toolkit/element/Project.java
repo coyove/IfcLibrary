@@ -7,7 +7,9 @@ import org.ifc.toolkit.base.Element;
  * Created by coyove on 2017/3/13.
  */
 public class Project extends Element {
+    private IfcProject project;
+
     public Project(IfcProject project) {
-        underlay = project;
+        this.project = project;
     }
 }

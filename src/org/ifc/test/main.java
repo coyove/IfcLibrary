@@ -1,12 +1,9 @@
 package org.ifc.test;
 
-import org.ifc.ifc2x3tc1.IfcSpatialStructureElement;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.toolkit.*;
-import org.ifc.toolkit.base.Contained;
-import org.ifc.toolkit.base.Meshable;
-import org.ifc.toolkit.base.SpatialElement;
-import org.ifc.toolkit.element.*;
+import org.ifc.toolkit.base.GeoElement;
+import org.ifc.toolkit.base.SpatialBuildingElement;
 import org.ifc.toolkit.SdsObjWriter;
 
 import java.io.FileInputStream;
@@ -48,15 +45,15 @@ public class main {
 //                }
 //            }
 //        }
-        for (Meshable mesh : model.getElements(Meshable.class)) {
+        for (GeoElement mesh : model.getElements(GeoElement.class)) {
             for (Mesh m : mesh.getGeometry()) {
                 obj.addFace(m);
             }
 
-            if (mesh instanceof Contained) {
-                for (SpatialElement spatialElement : ((Contained) mesh).getParents()) {
-                    System.out.println(((IfcSpatialStructureElement) spatialElement.underlay).getStepLine());
-                }
+            mesh.getParameters();
+
+            for (SpatialBuildingElement o : mesh.getParents()) {
+                System.out.println(o.underlay.getStepLine());
             }
         }
 
