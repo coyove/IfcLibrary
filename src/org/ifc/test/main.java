@@ -5,8 +5,10 @@ import org.ifc.toolkit.*;
 import org.ifc.toolkit.base.GeoElement;
 import org.ifc.toolkit.base.SpatialBuildingElement;
 import org.ifc.toolkit.SdsObjWriter;
+import org.ifc.toolkit.element.Property;
 
 import java.io.FileInputStream;
+import java.util.Map;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -50,10 +52,11 @@ public class main {
                 obj.addFace(m);
             }
 
-            mesh.getParameters();
-
-            for (SpatialBuildingElement o : mesh.getParents()) {
-                System.out.println(o.underlay.getStepLine());
+            for (Property property : mesh.getParameters()) {
+                for (Map.Entry<String, Property.Value> entry : property.entrySet()) {
+                    System.out.println(entry.getKey() + " " +
+                            ((Property.SingleValue) entry.getValue()).getValue());
+                }
             }
         }
 

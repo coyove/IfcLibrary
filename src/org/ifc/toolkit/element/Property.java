@@ -2,6 +2,7 @@ package org.ifc.toolkit.element;
 
 import org.ifc.ifc2x3tc1.*;
 import org.ifc.toolkit.base.Element;
+import org.ifc.toolkit.util.IfcValueUtils;
 
 import java.util.*;
 
@@ -10,16 +11,67 @@ import java.util.*;
  */
 public class Property extends Element implements Map<String, Property.Value> {
     public static abstract class Value {
-        private IfcProperty source;
+        IfcProperty source;
+
+        String name;
+
+        String description;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        Value(String name, String description) {
+            this.name = name;
+            this.description = description;
+        }
+
+        Value() {}
+
+        abstract void updateIfcRaw();
+
+        public final static String WindowLiningDepth = "LiningDepth";
+        public final static String WindowLiningThickness = "LiningThickness";
+        public final static String WindowTransomThickness = "TransomThickness";
+        public final static String WindowMullionThickness = "MullionThickness";
+        public final static String WindowFirstTransomOffset = "FirstTransomOffset";
+        public final static String WindowSecondTransomOffset = "SecondTransomOffset";
+        public final static String WindowFirstMullionOffset = "FirstMullionOffset";
+        public final static String WindowSecondMullionOffset = "SecondMullionOffset";
+        public final static String WindowShapeAspectStyle = "ShapeAspectStyle";
     }
 
-    public static class BoundedValue extends Value {}
-
-    public static class EnumeratedValue extends Value {}
-
-    public static class ListValue extends Value {}
-
-    public static class ReferenceValue extends Value {}
+//    public static class BoundedValue extends Value {
+//        void updateIfcRaw() {
+//
+//        }
+//    }
+//
+//    public static class EnumeratedValue extends Value {
+//        void updateIfcRaw() {
+//
+//        }
+//    }
+//
+//    public static class ListValue extends Value {
+//        void updateIfcRaw() {
+//
+//        }
+//    }
+//
+//    public static class ReferenceValue extends Value {
+//        void updateIfcRaw() {
+//
+//        }
+//    }
 
     public static class SingleValue extends Value {
         public Object getValue() {
@@ -28,6 +80,7 @@ public class Property extends Element implements Map<String, Property.Value> {
 
         public void setValue(Object value) {
             this.value = value;
+            updateIfcRaw();
         }
 
         public IfcUnit getUnit() {
@@ -36,6 +89,46 @@ public class Property extends Element implements Map<String, Property.Value> {
 
         public void setUnit(IfcUnit unit) {
             this.unit = unit;
+            updateIfcRaw();
+        }
+
+        SingleValue() {}
+
+        public SingleValue(String name, Object value, IfcUnit unit) {
+            super(name, "");
+
+            this.value = value;
+            this.unit = unit;
+
+            this.source = new IfcPropertySingleValue(new IfcIdentifier(name, true),
+                    new IfcText("", true),
+                    IfcValueUtils.valueOf(value),
+                    unit);
+        }
+
+        public SingleValue(String name, String description, Object value, IfcUnit unit) {
+            super(name, description);
+
+            this.value = value;
+            this.unit = unit;
+
+            this.source = new IfcPropertySingleValue(new IfcIdentifier(name, true),
+                    new IfcText(description, true),
+                    IfcValueUtils.valueOf(value),
+                    unit);
+        }
+
+        void updateIfcRaw() {
+            ((IfcPropertySingleValue) source).setUnit(this.unit);
+            ((IfcPropertySingleValue) source).setNominalValue(IfcValueUtils.valueOf(this.value));
+
+            source.getName().setDecodedValue(this.name);
+            IfcText d = source.getDescription();
+            if (d != null) {
+                d.setDecodedValue(this.description);
+            } else {
+                source.setDescription(new IfcText(this.description, true));
+            }
         }
 
         private Object value;
@@ -43,9 +136,14 @@ public class Property extends Element implements Map<String, Property.Value> {
         private IfcUnit unit;
     }
 
-    public static class TableValue extends Value {}
+//    public static class TableValue extends Value {
+//        void updateIfcRaw() {
+//        }
+//    }
 
     private Map<String, Value> values;
+
+    private IfcPropertyDefinition propertyDefinition;
 
     public void clear() {
         values.clear();
@@ -64,7 +162,7 @@ public class Property extends Element implements Map<String, Property.Value> {
     }
 
     public void putAll(Map<? extends String, ? extends Value> m) {
-        values.putAll(m);
+        throw new UnsupportedOperationException();
     }
 
     public int size() {
@@ -84,7 +182,7 @@ public class Property extends Element implements Map<String, Property.Value> {
     }
 
     public boolean remove(Object key, Object value) {
-        return values.remove(key, value);
+        throw new UnsupportedOperationException();
     }
 
     public Value remove(Object key) {
@@ -92,6 +190,26 @@ public class Property extends Element implements Map<String, Property.Value> {
     }
 
     public Value put(String key, Value value) {
+        Value old = values.get(key);
+        value.updateIfcRaw();
+
+        if (old != null && old.equals(value))
+            return value;
+
+        if (propertyDefinition instanceof IfcPropertySet) {
+            IfcPropertySet s = ((IfcPropertySet) propertyDefinition);
+            SET<IfcProperty> properties = s.getHasProperties();
+
+            if (properties == null) {
+                properties = new SET<IfcProperty>();
+                s.setHasProperties(properties);
+            }
+
+            properties.add(value.source);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
         return values.put(key, value);
     }
 
@@ -105,34 +223,52 @@ public class Property extends Element implements Map<String, Property.Value> {
 
     public Property(IfcPropertyDefinition definition) {
         this();
-
+        init(definition);
     }
 
     public Property(IfcRelDefinesByProperties defines) {
         this(defines.getRelatingPropertyDefinition());
     }
 
-//    public static Property from(IfcPropertyDefinition definition) {
-//        if (definition instanceof IfcPropertySet) {
-//            IfcPropertySet s = ((IfcPropertySet) definition);
-//            SET<IfcProperty> properties = s.getHasProperties();
-//
-//            if (properties != null) {
-//                for (IfcProperty property : properties) {
-//
-//                }
-//            }
-//        }
-//    }
+    private void init(IfcPropertyDefinition definition) {
+        propertyDefinition = definition;
 
-    public static Property from(IfcProperty property) {
-        Property ret = new Property();
+        if (definition instanceof IfcPropertySet) {
+            IfcPropertySet s = ((IfcPropertySet) definition);
+            SET<IfcProperty> properties = s.getHasProperties();
 
-        if (property instanceof IfcPropertySingleValue) {
-            String name = property.getName().getDecodedValue();
-            ((IfcPropertySingleValue) property).getNominalValue()
+            if (properties != null) {
+                for (IfcProperty property : properties) {
+                    Value v = from(property);
+                    this.values.put(v.name, v);
+                }
+            }
+
+            return;
+        } else if (definition instanceof IfcWindowLiningProperties) {
+            IfcWindowLiningProperties p = ((IfcWindowLiningProperties) definition);
+            this.values.put(Value.LiningDepth, p.getLiningDepth().value)
+            return;
         }
 
-        return ret;
+        throw new UnsupportedOperationException();
+    }
+
+    public static Value from(IfcProperty property) {
+//        Property ret = new Property();
+
+        if (property instanceof IfcPropertySingleValue) {
+            Object value = IfcValueUtils.parse(((IfcPropertySingleValue) property).getNominalValue());
+
+            SingleValue v = new SingleValue();
+            v.source = property;
+            v.name = property.getName().getDecodedValue();
+            v.setValue(value);
+            v.setUnit(((IfcPropertySingleValue) property).getUnit());
+            return v;
+        }
+
+//        return ret;
+        throw new UnsupportedOperationException();
     }
 }

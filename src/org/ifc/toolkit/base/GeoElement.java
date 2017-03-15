@@ -4,6 +4,7 @@ import org.ifc.ifc2x3tc1.*;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.toolkit.Mesh;
 import org.ifc.toolkit.Representation;
+import org.ifc.toolkit.element.Property;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +21,27 @@ public abstract class GeoElement extends Element {
         // underlay.getOwnerHistory().
     }
 
-    public void getParameters() {
+    public List<Property> getParameters() {
         SET<IfcRelDefines> defines = ((IfcObject) underlay).getIsDefinedBy_Inverse();
+        List<Property> ret = new ArrayList<Property>(1);
+
         if (defines == null)
-            return;
+            return ret;
 
         for (IfcRelDefines define : defines) {
-            IfcPropertySetDefinition def = 
-                    ((IfcRelDefinesByProperties) define).getRelatingPropertyDefinition();
-
+            if (define instanceof IfcRelDefinesByProperties) {
+                IfcPropertySetDefinition def =
+                        ((IfcRelDefinesByProperties) define).getRelatingPropertyDefinition();
+                ret.add(new Property(def));
+            } else if (define instanceof IfcRelDefinesByType) {
+                for (IfcPropertySetDefinition def :
+                        ((IfcRelDefinesByType) define).getRelatingType().getHasPropertySets()) {
+                    ret.add(new Property(def));
+                }
+            }
         }
+
+        return ret;
     }
 
 
