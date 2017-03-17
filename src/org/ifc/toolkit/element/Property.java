@@ -37,16 +37,6 @@ public class Property extends Element implements Map<String, Property.Value> {
         Value() {}
 
         abstract void updateIfcRaw();
-
-        public final static String WindowLiningDepth = "LiningDepth";
-        public final static String WindowLiningThickness = "LiningThickness";
-        public final static String WindowTransomThickness = "TransomThickness";
-        public final static String WindowMullionThickness = "MullionThickness";
-        public final static String WindowFirstTransomOffset = "FirstTransomOffset";
-        public final static String WindowSecondTransomOffset = "SecondTransomOffset";
-        public final static String WindowFirstMullionOffset = "FirstMullionOffset";
-        public final static String WindowSecondMullionOffset = "SecondMullionOffset";
-        public final static String WindowShapeAspectStyle = "ShapeAspectStyle";
     }
 
 //    public static class BoundedValue extends Value {
@@ -141,6 +131,13 @@ public class Property extends Element implements Map<String, Property.Value> {
 //        }
 //    }
 
+    public static class ContainedValue extends Value {
+        @Override
+        void updateIfcRaw() {
+
+        }
+    }
+
     private Map<String, Value> values;
 
     private IfcPropertyDefinition propertyDefinition;
@@ -193,8 +190,13 @@ public class Property extends Element implements Map<String, Property.Value> {
         Value old = values.get(key);
         value.updateIfcRaw();
 
-        if (old != null && old.equals(value))
-            return value;
+        if (old != null) {
+            if (old.equals(value))
+                return value;
+
+            if (!old.name.equals(key))
+                throw new UnsupportedOperationException("unmatched name");
+        }
 
         if (propertyDefinition instanceof IfcPropertySet) {
             IfcPropertySet s = ((IfcPropertySet) propertyDefinition);
@@ -247,7 +249,7 @@ public class Property extends Element implements Map<String, Property.Value> {
             return;
         } else if (definition instanceof IfcWindowLiningProperties) {
             IfcWindowLiningProperties p = ((IfcWindowLiningProperties) definition);
-            this.values.put(Value.LiningDepth, p.getLiningDepth().value)
+//            p.get
             return;
         }
 

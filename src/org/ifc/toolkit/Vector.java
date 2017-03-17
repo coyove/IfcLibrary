@@ -33,6 +33,12 @@ public class Vector extends Point {
         );
     }
 
+    public static void cross(Vector left, Vector right, Vector result) {
+        result.x = left.y * right.z - left.z * right.y;
+        result.y = left.z * right.x - left.x * right.z;
+        result.z = left.x * right.y - left.y * right.x;
+    }
+
     public Vector crossI(Vector right) {
         double _x = this.y * right.z - this.z * right.y;
         double _y = this.z * right.x - this.x * right.z;

@@ -58,16 +58,24 @@ public class Representation {
                 } else if (item instanceof IfcFacetedBrep) {
                     IfcClosedShell shell = ((IfcFacetedBrep) item).getOuter();
                     Mesh mesh = new Mesh();
+
                     for (IfcFace face : shell.getCfsFaces()) {
+                        mesh.markFaceBegin();
+
                         for (IfcFaceBound bound : face.getBounds()) {
                             IfcLoop loop = bound.getBound();
                             if (loop instanceof IfcPolyLoop) {
-                                mesh.mark();
+                                mesh.markVertexBegin();
+
                                 for (IfcCartesianPoint point : ((IfcPolyLoop) loop).getPolygon())
                                     mesh.addVertex(Vector.from(point));
+
+                                // vertexEnd
                                 mesh.addFace();
                             }
                         }
+
+                        mesh.markFaceEnd();
                     }
 
                     if (matrix != null) mesh.transform(matrix);

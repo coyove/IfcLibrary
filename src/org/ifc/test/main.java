@@ -52,12 +52,12 @@ public class main {
                 obj.addFace(m);
             }
 
-            for (Property property : mesh.getParameters()) {
-                for (Map.Entry<String, Property.Value> entry : property.entrySet()) {
-                    System.out.println(entry.getKey() + " " +
-                            ((Property.SingleValue) entry.getValue()).getValue());
-                }
-            }
+//            for (Property property : mesh.getParameters()) {
+//                for (Map.Entry<String, Property.Value> entry : property.entrySet()) {
+//                    System.out.println(entry.getKey() + " " +
+//                            ((Property.SingleValue) entry.getValue()).getValue());
+//                }
+//            }
         }
 
         obj.write("test.obj");

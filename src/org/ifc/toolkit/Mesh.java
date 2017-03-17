@@ -2,6 +2,7 @@ package org.ifc.toolkit;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
+import sun.security.provider.certpath.Vertex;
 
 import java.util.*;
 
@@ -26,12 +27,48 @@ public class Mesh implements Iterable<Face> {
 
     List<Vector> vertexes = new ArrayList<Vector>(8);
 
-    private int lastAddedPoint = 0;
+    private int lastAddedVertex = 0;
+
+    private int lastAddedFace = 0;
 
     private BoundingBox cachedBoundingBox = null;
 
-    void mark() {
-        lastAddedPoint = vertexes.size();
+    void markVertexBegin() {
+        lastAddedVertex = vertexes.size();
+    }
+
+    void markFaceBegin() {
+        lastAddedFace = faces.size();
+    }
+
+    void markFaceEnd() {
+        if (faces.size() <= lastAddedFace + 1)
+            return; // zero or one face has been added
+
+        // multiple faces added
+        Vector fn2 = new Vector();
+        Vector fn1 = fn2;
+
+        for (int i = lastAddedFace; i < faces.size(); i++) {
+            int[] indexes = faces.get(i).indexes;
+            fn2.x = fn2.y = fn2.z = 0;
+
+            for (int i1 = 1; i1 < indexes.length; i1++) {
+                Vector p1 = vertexes.get(indexes[i1]);
+                Vector p2 = vertexes.get(indexes[i1 == indexes.length - 1 ? 0 : i1 + 1]);
+
+                fn2.x += (p1.y - p2.y) * (p1.z + p2.z);
+                fn2.y += (p1.z - p2.z) * (p1.x + p2.x);
+                fn2.z += (p1.x - p2.x) * (p1.y + p2.y);
+            }
+
+            if (i == lastAddedFace) {
+                fn1 = fn2.clone();
+            } else {
+                double c = fn1.dot(fn2) / (fn1.magnitude() * fn2.magnitude());
+                System.out.println(c);
+            }
+        }
     }
 
     private void expandBoundingBox(Vector n) {
@@ -63,7 +100,7 @@ public class Mesh implements Iterable<Face> {
     }
 
     void addFace() {
-        addFace(lastAddedPoint, vertexes.size());
+        addFace(lastAddedVertex, vertexes.size());
     }
 
     void addFace(int... indexes) {

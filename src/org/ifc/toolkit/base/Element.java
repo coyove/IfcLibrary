@@ -35,7 +35,7 @@ public abstract class Element {
                 IfcSlab.class,
                 IfcColumn.class,
                 IfcWall.class, IfcWallStandardCase.class,
-                IfcWindow.class,
+//                IfcWindow.class,
                 IfcBuilding.class,
                 IfcBuildingStorey.class,
                 IfcSpace.class));
