@@ -16,7 +16,7 @@ public class ShapeUtils {
         double a = 0.0;
 
         for (int p = n - 1, q = 0; q < n; p = q++)
-            a += contour.get(p).x * contour.get(p).y - contour.get(p).x * contour.get(p).y;
+            a += contour.get(p).x * contour.get(q).y - contour.get(q).x * contour.get(p).y;
 
         return a * 0.5;
 
@@ -500,7 +500,7 @@ public class ShapeUtils {
             } else {
 
                 // main angle > 180 deg.
-                return ((from2otherAngle >= 0) || (other2toAngle >= 0));
+                return ((from2otherAngle <= 0) && (other2toAngle <= 0));
 
             }
 
@@ -535,19 +535,20 @@ public class ShapeUtils {
         if (!insideAngle)
             return false;
 
+        return true;
         // Check if shape point lies within angle around hole point
-        int lastHoleIdx = hole.size() - 1;
-
-        int prevHoleIdx = inHoleIdx - 1;
-        if (prevHoleIdx < 0)
-            prevHoleIdx = lastHoleIdx;
-
-        int nextHoleIdx = inHoleIdx + 1;
-        if (nextHoleIdx > lastHoleIdx)
-            nextHoleIdx = 0;
-
-        return isPointInsideAngle(hole.get(inHoleIdx),
-                hole.get(prevHoleIdx), hole.get(nextHoleIdx), shape.get(inShapeIdx));
+//        int lastHoleIdx = hole.size() - 1;
+//
+//        int prevHoleIdx = inHoleIdx - 1;
+//        if (prevHoleIdx < 0)
+//            prevHoleIdx = lastHoleIdx;
+//
+//        int nextHoleIdx = inHoleIdx + 1;
+//        if (nextHoleIdx > lastHoleIdx)
+//            nextHoleIdx = 0;
+//
+//        return isPointInsideAngle(hole.get(inHoleIdx),
+//                hole.get(prevHoleIdx), hole.get(nextHoleIdx), shape.get(inShapeIdx));
     }
 
     public static boolean intersectsShapeEdge(List<Vector> shape, Vector inShapePt, Vector inHolePt) {
@@ -621,8 +622,9 @@ public class ShapeUtils {
 
             counter--;
             if (counter < 0) {
-//                console.log( "Infinite Loop! Holes left:" + indepHoles.length + ", Probably Hole outside Shape!" );
-                break;
+//                System.out.println( "Infinite Loop! Holes left:" + indepHoles.size() + ", Probably Hole outside Shape!" );
+//                break;
+                return null;
             }
 
             // search for shape-vertex and hole-vertex,
@@ -663,7 +665,8 @@ public class ShapeUtils {
                         tmpHole1 = hole.subList(holeIndex, hole.size());
                         tmpHole2 = hole.subList(0, holeIndex + 1);
 
-                        shape = tmpShape1;
+                        shape = new ArrayList<Vector>();
+                        shape.addAll(tmpShape1);
                         shape.addAll(tmpHole1);
                         shape.addAll(tmpHole2);
                         shape.addAll(tmpShape2);

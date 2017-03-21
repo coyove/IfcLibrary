@@ -34,73 +34,78 @@ public class Mesh implements Iterable<Face> {
 
     private BoundingBox cachedBoundingBox = null;
 
-    void markVertexBegin() {
+    public void markVertexBegin() {
         lastAddedVertex = vertexes.size();
     }
 
-    void markFaceBegin() {
+    public void markFaceBegin() {
         lastAddedFace = faces.size();
     }
 
-    void markFaceEnd() {
+    public void markFaceEnd() {
         if (faces.size() <= lastAddedFace + 1)
             return; // zero or one face has been added
 
         // multiple faces added
         // we imply that there are holes in the first added face
 
-        int minIdx = Integer.MAX_VALUE;
-
-        List<Vector> contour = new ArrayList<Vector>(faces.get(lastAddedFace).indexes.length);
-        for (int i : faces.get(lastAddedFace).indexes) {
-            contour.add(vertexes.get(i));
-            if (i < minIdx) minIdx = i;
-        }
-
-        List<List<Vector>> holes = new ArrayList<List<Vector>>(faces.size() - lastAddedFace - 1);
-        for (int i = lastAddedFace + 1; i < faces.size(); i++) {
+        Vector fn2 = new Vector();
+        Vector fn1 = fn2;
+        int r = 0;
+        for (int i = lastAddedFace; i < faces.size(); i++) {
             int[] indexes = faces.get(i).indexes;
-            List<Vector> arr = new ArrayList<Vector>(indexes.length);
+            fn2.x = fn2.y = fn2.z = 0;
 
-            holes.add(arr);
-            for (int index : indexes) {
-                arr.add(vertexes.get(index));
-                if (index < minIdx) minIdx = index;
+            for (int i1 = 1; i1 < indexes.length; i1++) {
+                Vector p1 = vertexes.get(indexes[i1]);
+                Vector p2 = vertexes.get(indexes[i1 == indexes.length - 1 ? 0 : i1 + 1]);
+
+                fn2.x += (p1.y - p2.y) * (p1.z + p2.z);
+                fn2.y += (p1.z - p2.z) * (p1.x + p2.x);
+                fn2.z += (p1.x - p2.x) * (p1.y + p2.y);
+            }
+
+            if (i == lastAddedFace) {
+                fn1 = fn2.clone();
+            } else {
+                double c = fn1.dot(fn2) / (fn1.magnitude() * fn2.magnitude());
+                if (c < 0) r++;
             }
         }
 
-        List<Vector[]> newShapes = triangulate(contour, holes);
-        vertexes = vertexes.subList(0, minIdx + 1);
-        for (Vector[] shape : newShapes) {
-            markVertexBegin();
-            addVertex(shape[0]);
-            addVertex(shape[1]);
-            addVertex(shape[2]);
-            addFace();
+        if (r == faces.size() - lastAddedFace - 1) {
+            int minIdx = Integer.MAX_VALUE;
+
+            List<Vector> contour = new ArrayList<Vector>(faces.get(lastAddedFace).indexes.length);
+            for (int i : faces.get(lastAddedFace).indexes) {
+                contour.add(vertexes.get(i));
+                if (i < minIdx) minIdx = i;
+            }
+
+            List<List<Vector>> holes = new ArrayList<List<Vector>>(faces.size() - lastAddedFace - 1);
+            for (int i = lastAddedFace + 1; i < faces.size(); i++) {
+                int[] indexes = faces.get(i).indexes;
+                List<Vector> arr = new ArrayList<Vector>(indexes.length);
+
+                holes.add(arr);
+                for (int index : indexes) {
+                    arr.add(vertexes.get(index));
+                    if (index < minIdx) minIdx = index;
+                }
+            }
+
+            List<Vector[]> newShapes = triangulate(contour, holes);
+//            if (newShapes != null) {
+//                faces = faces.subList(0, lastAddedFace);
+//                for (Vector[] shape : newShapes) {
+//                    markVertexBegin();
+//                    addVertex(shape[0]);
+//                    addVertex(shape[1]);
+//                    addVertex(shape[2]);
+//                    addFace();
+//                }
+//            }
         }
-//        Vector fn2 = new Vector();
-//        Vector fn1 = fn2;
-//
-//        for (int i = lastAddedFace; i < faces.size(); i++) {
-//            int[] indexes = faces.get(i).indexes;
-//            fn2.x = fn2.y = fn2.z = 0;
-//
-//            for (int i1 = 1; i1 < indexes.length; i1++) {
-//                Vector p1 = vertexes.get(indexes[i1]);
-//                Vector p2 = vertexes.get(indexes[i1 == indexes.length - 1 ? 0 : i1 + 1]);
-//
-//                fn2.x += (p1.y - p2.y) * (p1.z + p2.z);
-//                fn2.y += (p1.z - p2.z) * (p1.x + p2.x);
-//                fn2.z += (p1.x - p2.x) * (p1.y + p2.y);
-//            }
-//
-//            if (i == lastAddedFace) {
-//                fn1 = fn2.clone();
-//            } else {
-//                double c = fn1.dot(fn2) / (fn1.magnitude() * fn2.magnitude());
-//                System.out.println(c);
-//            }
-//        }
     }
 
     @SuppressWarnings("unchecked")
@@ -116,19 +121,21 @@ public class Mesh implements Iterable<Face> {
         Map<String, Integer> allPointsMap = new HashMap<String, Integer>();
 
         // To maintain reference to old shape, one must match coordinates, or offset the indices from original arrays. It's probably easier to do the first.
-        List<Vector> allPoints = contour; //new ArrayList<Vector>(contour.size());
+//        List<Vector> allPoints = contour; //new ArrayList<Vector>(contour.size());
 //        Collections.copy(allPoints, contour);
 
-        for (List<Vector> hole : holes) {
-            allPoints.addAll(hole);
-        }
-
-        for (i = 0, il = allPoints.size(); i < il; i++) {
-            key = allPoints.get(i).x + ":" + allPoints.get(i).y;
-            allPointsMap.put(key, i);
-        }
+//        for (List<Vector> hole : holes) {
+//            allPoints.addAll(hole);
+//        }
+//
+//        for (i = 0, il = allPoints.size(); i < il; i++) {
+//            key = allPoints.get(i).x + ":" + allPoints.get(i).y;
+//            allPointsMap.put(key, i);
+//        }
 
         List<Vector> shapeWithoutHoles = ShapeUtils.removeHoles(contour, holes);
+        if (shapeWithoutHoles == null) return null;
+
         return ShapeUtils.triangulate(shapeWithoutHoles, false);
     }
 
@@ -150,27 +157,27 @@ public class Mesh implements Iterable<Face> {
         return cachedBoundingBox;
     }
 
-    void addVertex(Vector n) {
+    public void addVertex(Vector n) {
         vertexes.add(n);
         expandBoundingBox(n);
     }
 
-    void addVertex(List<Vector> ns) {
+    public void addVertex(List<Vector> ns) {
         vertexes.addAll(ns);
         for (Vector n : ns) expandBoundingBox(n);
     }
 
-    void addFace() {
+    public void addFace() {
         addFace(lastAddedVertex, vertexes.size());
     }
 
-    void addFace(int... indexes) {
+    public void addFace(int... indexes) {
         IFace f = new IFace();
         f.indexes = indexes;
         faces.add(f);
     }
 
-    void addFace(int vfrom, int vto) {
+    public void addFace(int vfrom, int vto) {
         IFace f = new IFace();
         f.indexes = new int[vto - vfrom];
 
