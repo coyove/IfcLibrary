@@ -2,17 +2,12 @@ package org.ifc.test;
 
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.toolkit.*;
+import org.ifc.toolkit.base.Element;
 import org.ifc.toolkit.base.GeoElement;
-import org.ifc.toolkit.base.SpatialBuildingElement;
 import org.ifc.toolkit.SdsObjWriter;
-import org.ifc.toolkit.element.GeneralObject;
-import org.ifc.toolkit.element.Property;
-import org.ifc.toolkit.element.Slab;
-import org.ifc.toolkit.element.Wall;
-import org.ifc.toolkit.util.ShapeUtils;
+import org.ifc.toolkit.element.*;
 
 import java.io.FileInputStream;
-import java.util.Map;
 
 /**
  * Created by coyove on 2016/12/5.
@@ -49,40 +44,26 @@ public class main {
         System.out.println(model.getIfcObjects().size());
         System.out.println(System.currentTimeMillis() - start);
 
-//        for (ClassInterface ci : model.getIfcObjects()) {
-//            if (ci instanceof IfcWall) {
-//                Wall wall = new Wall((IfcWall) ci);
-//                for (Mesh m : wall.getGeometry()) {
-//                    obj.addFace(m);
-//                }
-//            } else if (ci instanceof IfcColumn) {
-//                Column wall = new Column((IfcColumn) ci);
-//                for (Mesh m : wall.getGeometry()) {
-//                    obj.addFace(m);
-//                }
-//            } else if (ci instanceof IfcSlab) {
-//                Slab wall = new Slab((IfcSlab) ci);
-//                for (Mesh m : wall.getGeometry()) {
-//                    obj.addFace(m);
-//                }
-//            } else if (ci instanceof IfcBeam) {
-//                Beam wall = new Beam((IfcBeam) ci);
-//                for (Mesh m : wall.getGeometry()) {
-//                    obj.addFace(m);
-//                }
+//        for (GeoElement mesh : model.getElements(GeneralObject.class)) {
+//            for (Mesh m : mesh.getGeometry()) {
+//                obj.addFace(m);
 //            }
+//
+////            for (Property property : mesh.getParameters()) {
+////                for (Map.Entry<String, Property.Value> entry : property.entrySet()) {
+////                    System.out.println(entry.getKey() + " " +
+////                            ((Property.SingleValue) entry.getValue()).getValue());
+////                }
+////            }
 //        }
-        for (GeoElement mesh : model.getElements(GeneralObject.class)) {
-            for (Mesh m : mesh.getGeometry()) {
-                obj.addFace(m);
-            }
 
-//            for (Property property : mesh.getParameters()) {
-//                for (Map.Entry<String, Property.Value> entry : property.entrySet()) {
-//                    System.out.println(entry.getKey() + " " +
-//                            ((Property.SingleValue) entry.getValue()).getValue());
-//                }
-//            }
+        for (Element elm : Planning
+                .from(model)
+                .select(Wall.class, Slab.class)
+                .withProperty("ExtendToStructure")) {
+            for (Mesh mesh : ((GeoElement) elm).getGeometry()) {
+                obj.addFace(mesh);
+            }
         }
 
         obj.write("test.obj");

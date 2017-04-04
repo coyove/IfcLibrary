@@ -34,8 +34,13 @@ public abstract class GeoElement extends Element {
                         ((IfcRelDefinesByProperties) define).getRelatingPropertyDefinition();
                 ret.add(new Property(def));
             } else if (define instanceof IfcRelDefinesByType) {
-                for (IfcPropertySetDefinition def :
-                        ((IfcRelDefinesByType) define).getRelatingType().getHasPropertySets()) {
+                IfcTypeObject to = ((IfcRelDefinesByType) define).getRelatingType();
+                if (to == null) continue;
+
+                SET<IfcPropertySetDefinition> sp = to.getHasPropertySets();
+                if (sp == null) continue;
+
+                for (IfcPropertySetDefinition def : sp) {
                     ret.add(new Property(def));
                 }
             }
@@ -53,11 +58,11 @@ public abstract class GeoElement extends Element {
         return Representation.getMesh(((IfcProduct) underlay).getRepresentation().getRepresentations());
     }
 
-    public List<SpatialBuildingElement> getParents() throws NotBuildingElementException {
+    public List<SpatialElement> getParents() throws NotBuildingElementException {
         if (!(underlay instanceof IfcElement))
             throw new NotBuildingElementException();
 
-        List<SpatialBuildingElement> ret = new ArrayList<SpatialBuildingElement>(1);
+        List<SpatialElement> ret = new ArrayList<SpatialElement>(1);
         SET<IfcRelContainedInSpatialStructure> inverses =
                 ((IfcElement) underlay).getContainedInStructure_Inverse();
 
@@ -65,7 +70,7 @@ public abstract class GeoElement extends Element {
             return ret;
 
         for (IfcRelContainedInSpatialStructure host : inverses)
-            ret.add((SpatialBuildingElement) IfcModel.castElement(host.getRelatingStructure()));
+            ret.add((SpatialElement) IfcModel.castElement(host.getRelatingStructure()));
 
         return ret;
     }

@@ -28,7 +28,14 @@ public class Matrix {
 
     public static class Transform {
         protected DenseMatrix64F matrix;
+
         private DenseMatrix64F swap;
+
+        public Vector getTranslationVector() {
+            return translationVector;
+        }
+
+        private Vector translationVector;
 
         public Transform() {
             matrix = new DenseMatrix64F(4, 4);
@@ -53,6 +60,8 @@ public class Matrix {
         }
 
         private DenseMatrix64F makeTranslationMatrix(Vector t) {
+            translationVector = t;
+
             return new DenseMatrix64F(4, 4, true,
                     1, 0, 0, t.x,
                     0, 1, 0, t.y,
