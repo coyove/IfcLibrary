@@ -4,7 +4,6 @@ import org.ifc.guidcompressor.GuidCompressor;
 import org.ifc.ifc2x3tc1.*;
 import org.ifc.ifcmodel.IfcModel;
 import org.ifc.toolkit.base.Element;
-import org.ifc.toolkit.element.Property;
 import org.ifc.toolkit.element.Storey;
 import org.ifc.toolkit.util.Utils;
 
@@ -17,17 +16,17 @@ import java.util.function.Predicate;
 public class Planning extends ArrayList<Element> {
     private static class StoreyInfo {
         IfcBuildingStorey storey;
-        double height;
+        double elevation;
 
         StoreyInfo(IfcBuildingStorey s, double a) {
             storey = s;
-            height = a;
+            elevation = a;
         }
     }
 
     private static Map<String, StoreyInfo> STOREY_NAMES_MAP = new HashMap<>();
 
-    private static TreeMap<Double, StoreyInfo> STOREY_HEIGHTS_MAP = new TreeMap<>();
+    private static TreeMap<Double, StoreyInfo> STOREY_ELEVATION_MAP = new TreeMap<>();
 
     private IfcModel model;
 
@@ -39,7 +38,7 @@ public class Planning extends ArrayList<Element> {
 
     public static void reset() {
         STOREY_NAMES_MAP = new HashMap<>();
-        STOREY_HEIGHTS_MAP = new TreeMap<>();
+        STOREY_ELEVATION_MAP = new TreeMap<>();
     }
 
     public static Planning from(IfcModel model) {
@@ -195,7 +194,7 @@ public class Planning extends ArrayList<Element> {
                     if (longName.length() > 0)
                         STOREY_NAMES_MAP.put(longName.toLowerCase(), info);
 
-                    STOREY_HEIGHTS_MAP.put(Storey.getHeight(s), info);
+                    STOREY_ELEVATION_MAP.put(Storey.getElevation(s), info);
                 }
             }
 
@@ -226,13 +225,13 @@ public class Planning extends ArrayList<Element> {
         return this;
     }
 
-    public Planning onStorey(double... storeyHeights) {
+    public Planning onStorey(double... storeyElevations) {
         buildStoreysMap();
 
-        HashSet<IfcSpatialStructureElement> storeys = new HashSet<>(storeyHeights.length);
+        HashSet<IfcSpatialStructureElement> storeys = new HashSet<>(storeyElevations.length);
 
-        for (double elevation : storeyHeights) {
-            StoreyInfo info = STOREY_HEIGHTS_MAP.floorEntry(elevation).getValue();
+        for (double elevation : storeyElevations) {
+            StoreyInfo info = STOREY_ELEVATION_MAP.floorEntry(elevation).getValue();
             if (info != null) storeys.add(info.storey);
         }
 
@@ -240,13 +239,13 @@ public class Planning extends ArrayList<Element> {
         return this;
     }
 
-    public Planning onStoreyRange(double fromHeight, double toHeight) {
+    public Planning onStoreyRange(double fromElevation, double toElevation) {
         buildStoreysMap();
 
         HashSet<IfcSpatialStructureElement> storeys = new HashSet<>();
-        for (Double e : STOREY_HEIGHTS_MAP.keySet()) {
-            if (e >= fromHeight && e <= toHeight)
-                storeys.add(STOREY_HEIGHTS_MAP.get(e).storey);
+        for (Double e : STOREY_ELEVATION_MAP.keySet()) {
+            if (e >= fromElevation && e <= toElevation)
+                storeys.add(STOREY_ELEVATION_MAP.get(e).storey);
         }
 
         addStoreyFilter(storeys);
@@ -257,8 +256,8 @@ public class Planning extends ArrayList<Element> {
         HashSet<IfcSpatialStructureElement> ss = guessStoreyNames(fromStorey, toStorey);
         if (ss.size() == 2) {
             Iterator iter = ss.iterator();
-            double f = Storey.getHeight((IfcBuildingStorey) iter.next());
-            double t = Storey.getHeight((IfcBuildingStorey) iter.next());
+            double f = Storey.getElevation((IfcBuildingStorey) iter.next());
+            double t = Storey.getElevation((IfcBuildingStorey) iter.next());
 
             return onStoreyRange(f, t);
         }

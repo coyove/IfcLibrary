@@ -98,6 +98,33 @@ public class Representation {
         return meshes;
     }
 
+    public static List<Mesh> getProfile(IfcRepresentation r, Matrix.Transform matrix) {
+        List<Mesh> meshes = new ArrayList<Mesh>();
+
+        for (IfcRepresentationItem item : r.getItems()) {
+            if (item instanceof IfcGeometricRepresentationItem) {
+                if (item instanceof IfcExtrudedAreaSolid) {
+                    addExtrudedAreaSolid(meshes, ((IfcExtrudedAreaSolid) item), matrix);
+                } else if (item instanceof IfcFacetedBrep) {
+
+                }
+            } else if (item instanceof IfcMappedItem) {
+                List<Mesh> source = getMesh(((IfcMappedItem) item).getMappingSource());
+                Matrix.Transform op = Position
+                        .calcPlacementTransform(((IfcMappedItem) item).getMappingTarget());
+
+                for (Mesh mesh : source) {
+                    mesh.transform(op);
+                    if (matrix != null) mesh.transform(matrix);
+                }
+
+                meshes.addAll(source);
+            }
+        }
+
+        return meshes;
+    }
+
     public static void addExtrudedAreaSolid(List<Mesh> meshes,
                                      IfcExtrudedAreaSolid eas,
                                      Matrix.Transform matrix) {

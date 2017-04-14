@@ -13,16 +13,16 @@ public class Storey extends SpatialElement {
         underlay = storey;
     }
 
-    public static double getHeight(IfcBuildingStorey storey) {
+    public static double getElevation(IfcBuildingStorey storey) {
         Matrix.Transform t = Position.calcPlacementTransform(storey.getObjectPlacement());
         return t.getTranslationVector().z;
     }
 
-    public double getHeight() {
-        return getHeight((IfcBuildingStorey) this.underlay);
+    public double getElevation() {
+        return getElevation((IfcBuildingStorey) this.underlay);
     }
 
-    public double getElevation() {
-        return ((IfcBuildingStorey) underlay).getElevation().value;
-    }
+//    public double getElevation() {
+//        return ((IfcBuildingStorey) underlay).getElevation().value;
+//    }
 }

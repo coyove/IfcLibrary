@@ -58,6 +58,16 @@ public abstract class GeoElement extends Element {
         return Representation.getMesh(((IfcProduct) underlay).getRepresentation().getRepresentations());
     }
 
+    public String getName() {
+        IfcLabel text = underlay.getName();
+        return text == null ? "" : text.getDecodedValue();
+    }
+
+    public String getDescription() {
+        IfcText text = underlay.getDescription();
+        return text == null ? "" : text.getDecodedValue();
+    }
+
     public List<SpatialElement> getParents() throws NotBuildingElementException {
         if (!(underlay instanceof IfcElement))
             throw new NotBuildingElementException();
