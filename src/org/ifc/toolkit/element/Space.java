@@ -14,9 +14,9 @@ public class Space extends SpatialElement {
         underlay = space;
     }
 
-    public double getArea() {
-        for (IfcRelDefines defines : ((IfcSpace) underlay).getIsDefinedBy_Inverse()) {
-            ((IfcRelDefinesByProperties) defines)
-        }
-    }
+//    public double getArea() {
+//        for (IfcRelDefines defines : ((IfcSpace) underlay).getIsDefinedBy_Inverse()) {
+//            ((IfcRelDefinesByProperties) defines)
+//        }
+//    }
 }

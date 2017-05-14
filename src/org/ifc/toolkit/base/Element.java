@@ -2,6 +2,7 @@ package org.ifc.toolkit.base;
 
 import org.ifc.ifc2x3tc1.*;
 import org.ifc.toolkit.element.*;
+import org.ifc.toolkit.util.LruCache;
 
 import java.util.*;
 
@@ -11,6 +12,8 @@ import java.util.*;
 public abstract class Element {
     public final static Map<Class, HashSet<Class>> CLASS_MAPPINGS;
 
+    public final static LruCache<ClassInterface, Element> CLASS_MAPPINGS_CACHE;
+
     private static HashSet<Class> makeClassSet(Class... cls) {
         HashSet<Class> ret = new HashSet<Class>();
         for (Class cl : cls) ret.add(cl);
@@ -18,7 +21,7 @@ public abstract class Element {
     }
 
     static {
-        CLASS_MAPPINGS = new HashMap<Class, HashSet<Class>>();
+        CLASS_MAPPINGS = new HashMap<>();
         CLASS_MAPPINGS.put(Project.class, makeClassSet(IfcProject.class));
         CLASS_MAPPINGS.put(Wall.class, makeClassSet(IfcWall.class, IfcWallStandardCase.class));
         CLASS_MAPPINGS.put(Column.class, makeClassSet(IfcColumn.class));
@@ -39,5 +42,7 @@ public abstract class Element {
                 IfcBuilding.class,
                 IfcBuildingStorey.class,
                 IfcSpace.class));
+
+        CLASS_MAPPINGS_CACHE = new LruCache<>();
     }
 }

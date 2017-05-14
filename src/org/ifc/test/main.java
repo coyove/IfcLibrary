@@ -6,6 +6,7 @@ import org.ifc.toolkit.base.Element;
 import org.ifc.toolkit.base.GeoElement;
 import org.ifc.toolkit.SdsObjWriter;
 import org.ifc.toolkit.element.*;
+import org.ifc.toolkit.util.LruCache;
 
 import java.io.FileInputStream;
 
@@ -57,12 +58,9 @@ public class main {
 ////            }
 //        }
 
-        for (Element elm : Planning
-                .from(model)
-                .select(Wall.class, Slab.class)
-                .withProperty("ExtendToStructure")) {
-            for (Mesh mesh : ((GeoElement) elm).getGeometry()) {
-                obj.addFace(mesh);
+        for (Element elm : Planning.from(model).select(Wall.class)) {
+            for (Element element : ((Wall) elm).getContainedElements()) {
+                System.out.println(element);
             }
         }
 
